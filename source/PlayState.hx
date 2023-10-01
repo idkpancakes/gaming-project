@@ -189,12 +189,12 @@ class DungeonGeneration
 /**
 	* it's dangerous to go alone! take this!
 	* 
-				.
-			  ":"
-			___:____     |"\/"|
-		 ,'        `.    \  /
-		 |  O        \___/  |
-		~^~^~^~^~^~^~^~^~^~^~^~^~
+*	       .
+*	      ":"
+*	    ___:____     |"\/"|
+*	  ,'        `.    \  /
+* 	 |  O        \___/  |
+* 	~^~^~^~^~^~^~^~^~^~^~^~^~
 	* 
 	* todo list
 	* - null error on pathfinding (failed to find path)
