@@ -1,6 +1,5 @@
 package;
 
-import cpp.abi.Abi;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -25,16 +24,16 @@ enum abstract TileType(Int) to Int
 
 class PlayState extends FlxState
 {
-	public static final SCALE_FACTOR = 0.25;
+	public static final SCALE_FACTOR = 1;
 
-	final WIDTH:Int = 128;
-	final HEIGHT:Int = 128;
+	final WIDTH:Int = 32;
+	final HEIGHT:Int = 32;
 
 	override public function create()
 	{
 		super.create();
 
-		var map = new DungeonGeneration(WIDTH, HEIGHT, 48);
+		var map = new DungeonGeneration(WIDTH, HEIGHT, 8);
 		var tileMap = new FlxTilemap();
 
 		var gridCSV = FlxStringUtil.arrayToCSV(map.dungeonMap, WIDTH);
@@ -50,28 +49,28 @@ class PlayState extends FlxState
 		// theres no collidable objects!!
 
 		// // itterate through every pair of possible rooms
-		// for (door1 in tileMap.getTileInstances(DOOR))
-		// {
-		// 	for (door2 in tileMap.getTileInstances(DOOR).filter(x -> x != door1))
-		// 	{
-		// 		// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
-		// 		var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NONE);
+		for (door1 in tileMap.getTileInstances(DOOR))
+		{
+			for (door2 in tileMap.getTileInstances(DOOR).filter(x -> x != door1))
+			{
+				// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
+				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NONE);
 
-		// 		/**
-		// 		 * the typed pathfinder has some kind of findpath by indicies function which would skip all the conversion we have to do.
-		//  * but it requires you to make a FlxPathFinder factorY? and your own data typed class? what! the helper methods are all there but the documentation has no ifno,
-		//    *it even has built in A* hueristics! but it just says no when you try to use it.
-		//
-		//
-		// 		 */
+				/**
+							 * the typed pathfinder has some kind of findpath by indicies function which would skip all the conversion we have to do.
+					* but it requires you to make a FlxPathFinder factorY? and your own data typed class? what! the helper methods are all there but the documentation has no ifno,
+					   *it even has built in A* hueristics! but it just says no when you try to use it.
 
-		// 		for (i in 1...(points.length - 1))
-		// 		{
-		// 			tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
-		// 			Log.trace(points[i]);
-		// 		}
-		// 	}
-		// }
+
+				 */
+
+				for (i in 1...(points.length - 1))
+				{
+					tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
+					Log.trace(points[i]);
+				}
+			}
+		}
 
 		tileMap.scale.set(SCALE_FACTOR, SCALE_FACTOR);
 		tileMap.screenCenter();
@@ -127,7 +126,7 @@ class DungeonGeneration
 			roomWidth = FlxG.random.int(4, 8);
 
 			// pick a start point that wont go out of bounds (I used 1,1 to maintain a border)
-			startPointX = FlxG.random.int(1, width - roomWidth);
+			startPointX = FlxG.random.int(1, width - roomWidth - 1);
 			startPointY = FlxG.random.int(1, height - roomHeight);
 
 			room = new FlxRect(startPointX, startPointY, roomWidth, roomHeight);
