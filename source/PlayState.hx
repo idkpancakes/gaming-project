@@ -2,8 +2,10 @@ package;
 
 import cpp.abi.Abi;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.tile.FlxCaveGenerator;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.path.FlxPath;
@@ -34,45 +36,14 @@ class PlayState extends FlxState
 	{
 		super.create();
 
-		var map = new DungeonGeneration(WIDTH, HEIGHT, 48);
+		var dungeonCSV = DungeonGeneration.generateDungeon(WIDTH, HEIGHT, 8);
 		var tileMap = new FlxTilemap();
 
-		var gridCSV = FlxStringUtil.arrayToCSV(map.dungeonMap, WIDTH);
-		tileMap.loadMapFromCSV(gridCSV, AssetPaths.black_white_tiles__png);
+		// var caveData:String = FlxCaveGenerator.generateCaveString(WIDTH, WIDTH, 15, 0.45);
 
-		// setup collision properties! we really only want room to be impassable for the purposes of
-		tileMap.setTileProperties(WALL, NONE);
-		tileMap.setTileProperties(HALL, NONE);
-		tileMap.setTileProperties(DOOR, NONE);
-		tileMap.setTileProperties(ROOM, ANY);
+		tileMap.loadMapFromCSV(dungeonCSV, AssetPaths.black_white_tiles__png);
 
-		// this connects each door with eveyr other door, it also randomly fails to connect a door even when a clear path is visible. its 5:13am and I have no idea why it's happening,
-		// theres no collidable objects!!
-
-		// // itterate through every pair of possible rooms
-		// for (door1 in tileMap.getTileInstances(DOOR))
-		// {
-		// 	for (door2 in tileMap.getTileInstances(DOOR).filter(x -> x != door1))
-		// 	{
-		// 		// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
-		// 		var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NONE);
-
-		// 		/**
-		// 		 * the typed pathfinder has some kind of findpath by indicies function which would skip all the conversion we have to do.
-		//  * but it requires you to make a FlxPathFinder factorY? and your own data typed class? what! the helper methods are all there but the documentation has no ifno,
-		//    *it even has built in A* hueristics! but it just says no when you try to use it.
-		//
-		//
-		// 		 */
-
-		// 		for (i in 1...(points.length - 1))
-		// 		{
-		// 			tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
-		// 			Log.trace(points[i]);
-		// 		}
-		// 	}
-		// }
-
+		// Scale up our tilemap for display
 		tileMap.scale.set(SCALE_FACTOR, SCALE_FACTOR);
 		tileMap.screenCenter();
 
@@ -85,28 +56,40 @@ class PlayState extends FlxState
 	}
 }
 
-class DungeonGeneration
+/**
+ * This class should handle building, placing, connecting and generating the dungeons, then it should return an CSV that can represent the level it has created
+ * 
+ * right now it builds our own rooms but lets experiement with the CaveGen and use their irregularly sized rooms and then I can try the algo I made. 
+ */
+class DungeonGeneration extends FlxDiagonalPathfinder
 {
-	public var dungeonMap:Array<Int> = new Array();
+	static public var dungeonMap:Array<Int> = new Array();
 
-	public var width:Int;
-	public var height:Int;
+	static public var tileMap = new FlxTilemap();
 
-	public var roomList:Array<FlxRect> = new Array();
+	static public var width:Int;
+	static public var height:Int;
 
-	public function new(?width:Int = 32, ?height:Int = 32, ?roomCount:Int = 4)
+	static public var roomList:Array<FlxRect> = new Array();
+
+	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?roomCount:Int = 4)
 	{
 		// setup the dungeon array with
-		dungeonMap = [for (i in 0...height * width) TileType.WALL];
+		dungeonMap = [for (i in 0..._height * _width) TileType.WALL];
 
-		this.width = width;
-		this.height = height;
+		width = _width;
+		height = _height;
 
 		for (i in 0...roomCount)
 			buildRoom();
+		connectRooms();
+
+		Log.trace(tileMap.toString());
+
+		return FlxStringUtil.arrayToCSV(tileMap.getData(), _width);
 	}
 
-	function buildRoom()
+	static function buildRoom()
 	{
 		// declare our room rect
 		var room:FlxRect;
@@ -166,8 +149,7 @@ class DungeonGeneration
 		roomList.push(room);
 	}
 
-	// ...
-	function isValidRoom(rect:FlxRect):Bool
+	static function isValidRoom(rect:FlxRect):Bool
 	{
 		for (point in 0...height * width)
 			if (dungeonMap[point] == TileType.ROOM && rect.containsPoint(flatTo2DIndex(point)))
@@ -175,43 +157,80 @@ class DungeonGeneration
 		return true;
 	}
 
+	static function connectRooms()
+	{
+		tileMap.loadMapFromCSV(FlxStringUtil.arrayToCSV(dungeonMap, width), AssetPaths.black_white_tiles__png);
+
+		// setup collision properties! we really only want room to be impassable for the purposes of
+		tileMap.setTileProperties(WALL, NONE);
+		tileMap.setTileProperties(HALL, NONE);
+		tileMap.setTileProperties(DOOR, NONE);
+		tileMap.setTileProperties(ROOM, ANY);
+
+		// // itterate through every pair of possible rooms
+		for (door1 in tileMap.getTileInstances(DOOR))
+		{
+			for (door2 in tileMap.getTileInstances(DOOR).filter(x -> x != door1))
+			{
+				// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
+				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NONE);
+
+				// ignore failed paths, fuck it
+				if (points == null)
+					points = [];
+
+				// hey it would just be awesome if this didn't fail to find the path, like just really great
+				for (i in 1...(points.length - 1))
+				{
+					tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
+				}
+			}
+		}
+	}
+
 	// helper methods to go from flat to 2d index because haxe will require different formats for the same class!!! there's no consistency! setTile and getTileIndexByCords for example
-	function flatTo2DIndex(flatIndex:Int):FlxPoint
+	static function flatTo2DIndex(flatIndex:Int):FlxPoint
 	{
 		return FlxPoint.get(flatIndex % width, Math.floor(flatIndex / width));
 	}
 
-	function _2DToFlatIndex(pointIndex:FlxPoint):Int
+	static function _2DToFlatIndex(pointIndex:FlxPoint):Int
 	{
 		return Math.floor(pointIndex.x + (pointIndex.y * width));
 	}
+
+	static public function getTileMap():FlxTilemap
+	{
+		return tileMap;
+	}
 }
+
 /**
-	* it's dangerous to go alone! take this!
-	* 
-*	       .
-*	      ":"
-*	    ___:____     |"\/"|
-*	  ,'        `.    \  /
-* 	 |  O        \___/  |
-* 	~^~^~^~^~^~^~^~^~^~^~^~^~
-	* 
-	* todo list
-	* - null error on pathfinding (failed to find path)
-	*  - pathfinding is linear and requires weights based on tiletype
-	* - at this point drunkards walk it
-	* - switch to a celluar automta and make it cave like?
-	* - camera follow a player (ask Cassandra for some sprites?) as they navigate the world
-	* - get an actual tilemap
-	* 
-	* 
-	* 
-	* feature list:
-	* - enemy placement, 
-	* - ladder/exit placement
-	* - item placement
-	* 
-	* 
-	* 
-	* \(o-o)/
+ * it's dangerous to go alone! take this!
+ * 
+ *	       .
+ *	      ":"
+ *	    ___:____     |"\/"|
+ *	  ,'        `.    \  /
+ * 	 |  O        \___/  |
+ * 	~^~^~^~^~^~^~^~^~^~^~^~^~
+ * 
+ * todo list
+ * - null error on pathfinding (failed to find path)
+ *  - pathfinding is linear and requires weights based on tiletype
+ * - at this point drunkards walk it
+ * - switch to a celluar automta and make it cave like?
+ * - camera follow a player (ask Cassandra for some sprites?) as they navigate the world
+ * - get an actual tilemap
+ * 
+ * 
+ * 
+ * feature list:
+ * - enemy placement, 
+ * - ladder/exit placement
+ * - item placement
+ * 
+ * 
+ * 
+ *
  */
