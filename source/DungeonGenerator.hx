@@ -295,3 +295,13 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 		return roomList;
 	}
 }
+/*	
+ * TODO: 
+ *  - pick a random cell in two rooms, and then connect them with flx pathfinding, carving walls along the way
+ * 
+ *  * Alright! So Im switching to cave generation for irregularly sized rooms, then Im going to try the algo I thought of to define the regions/space of those rooms. 
+ * At that point I'll be able to use the same code to connect the rooms up and we'll have a cave like level! 
+ * 
+ *  That parts done! ended up using a brute force method, see the DungeonGen file for more info, theres a lot of improvements that could be made but its functional
+ *
+ */
