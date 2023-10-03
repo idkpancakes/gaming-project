@@ -138,7 +138,7 @@ class DungeonGeneration extends FlxDiagonalPathfinder
 			for (door2 in tileMap.getTileInstances(DOOR).filter(x -> x != door1))
 			{
 				// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
-				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NONE);
+				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(door1, false), tileMap.getTileCoordsByIndex(door2, false), NONE, NORMAL);
 
 				// ignore failed paths, fuck it
 				if (points == null)
@@ -179,7 +179,7 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 	static public var width:Int;
 	static public var height:Int;
 
-	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?smoothingItterations:Int = 15, ?wallRatio:Float = .5)
+	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?smoothingItterations:Int = 15, ?wallRatio:Float = .45)
 	{
 		// setup the width, height vals
 		width = _width;
@@ -188,7 +188,7 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 		tileMap = new FlxTilemap();
 		roomList = new Array();
 
-		var caveData:String = FlxCaveGenerator.generateCaveString(_width, _height, 15, 0.45);
+		var caveData:String = FlxCaveGenerator.generateCaveString(_width, _height, smoothingItterations, wallRatio);
 
 		Log.trace(caveData);
 
@@ -274,33 +274,63 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 
 		// setup collision properties! we really only want room to be impassable for the purposes of
 		tileMap.setTileProperties(WALL, NONE);
-		tileMap.setTileProperties(HALL, ANY);
 		tileMap.setTileProperties(DOOR, NONE);
 		tileMap.setTileProperties(ROOM, NONE);
 
-		// // itterate through every pair of possible rooms
-		for (room1 in roomList)
+		// not allowed ot use existing paths
+		tileMap.setTileProperties(HALL, ANY);
+
+		var roomListCopy = [].concat(roomList);
+
+		// This will produce less paths but does not promise all rooms will be connected
+		while (roomListCopy.length > 1)
 		{
-			for (room2 in roomList.filter(x -> x != room1))
+			var room1 = FlxG.random.getObject(roomListCopy);
+			roomListCopy.remove(room1);
+
+			var room2 = FlxG.random.getObject(roomListCopy);
+
+			var r1Point = FlxG.random.getObject(room1);
+			var r2Point = FlxG.random.getObject(room2);
+
+			// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
+			var points = tileMap.findPath(tileMap.getTileCoordsByIndex(r1Point, false), tileMap.getTileCoordsByIndex(r2Point, false), NONE,
+				FlxTilemapDiagonalPolicy.NONE);
+
+			// ignore failed paths, fuck it
+			if (points == null)
+				points = [];
+
+			// hey it would just be awesome if this didn't fail to find the path, like just really great
+			for (i in 1...(points.length - 1))
 			{
-				var r1Point = FlxG.random.getObject(room1);
-				var r2Point = FlxG.random.getObject(room2);
-
-				// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
-				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(r1Point, false), tileMap.getTileCoordsByIndex(r2Point, false), NONE,
-					FlxTilemapDiagonalPolicy.NONE);
-
-				// ignore failed paths, fuck it
-				if (points == null)
-					points = [];
-
-				// hey it would just be awesome if this didn't fail to find the path, like just really great
-				for (i in 1...(points.length - 1))
-				{
-					tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
-				}
+				tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
 			}
 		}
+
+		// // itterate through every pair of possible rooms (Non duplicate) -- this causes the maximum amount of paths, and looks off
+		// for (room1 in roomList)
+		// {
+		// 	for (room2 in roomList.filter(x -> x != room1))
+		// 	{
+		// 		var r1Point = FlxG.random.getObject(room1);
+		// 		var r2Point = FlxG.random.getObject(room2);
+
+		// 		// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
+		// 		var points = tileMap.findPath(tileMap.getTileCoordsByIndex(r1Point, false), tileMap.getTileCoordsByIndex(r2Point, false), NONE,
+		// 			FlxTilemapDiagonalPolicy.NONE);
+
+		// 		// ignore failed paths, fuck it
+		// 		if (points == null)
+		// 			points = [];
+
+		// 		// hey it would just be awesome if this didn't fail to find the path, like just really great
+		// 		for (i in 1...(points.length - 1))
+		// 		{
+		// 			tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
+		// 		}
+		// 	}
+		// }
 
 		// cast all hall types to ROOM.
 		return FlxStringUtil.arrayToCSV(tileMap.getData().map(x -> return x == TileType.HALL ? TileType.ROOM : x), width);

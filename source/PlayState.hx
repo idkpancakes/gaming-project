@@ -15,14 +15,16 @@ class PlayState extends FlxState
 {
 	public static final SCALE_FACTOR = 1;
 
-	final WIDTH:Int = 32;
-	final HEIGHT:Int = 32;
-
+	// final WIDTH:Int = 32;
+	// final HEIGHT:Int = 32;
 	var tileMap = new FlxTilemap();
 
 	override public function create()
 	{
 		super.create();
+
+		final WIDTH:Int = Math.floor(FlxG.width / 8);
+		final HEIGHT:Int = Math.floor(FlxG.height / 8);
 
 		tileMap = new FlxTilemap();
 
