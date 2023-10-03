@@ -1,6 +1,7 @@
 package;
 
-import DungeonGenerator.CaveDungeonGeneration;
+import CaveDungeonGeneration.CaveDungeonGeneration;
+import DungeonGenerator.DungeonGeneration;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -11,30 +12,46 @@ import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
 
+enum abstract TileType(Int) to Int
+{
+	var VOID = 0;
+	var WALL = 1;
+	var ROOM = 2;
+	var HALL = 3;
+	var DOOR = 4;
+}
+
 class PlayState extends FlxState
 {
-	public static final SCALE_FACTOR = 1;
+	public static final SCALE_FACTOR = 0.25;
 
-	// final WIDTH:Int = 32;
-	// final HEIGHT:Int = 32;
+	final WIDTH:Int = 32;
+	final HEIGHT:Int = 32;
 	var tileMap = new FlxTilemap();
 
 	override public function create()
 	{
 		super.create();
 
-		final WIDTH:Int = Math.floor(FlxG.width / 8);
-		final HEIGHT:Int = Math.floor(FlxG.height / 8);
+		// final WIDTH:Int = Math.floor(FlxG.width / 8);
+		// final HEIGHT:Int = Math.floor(FlxG.height / 8);
 
 		tileMap = new FlxTilemap();
 
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
+		// var standardDungeonCSV = DungeonGeneration.generateDungeon(WIDTH, HEIGHT);
 
 		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
+		// tileMap.loadMapFromCSV(standardDungeonCSV, AssetPaths.black_white_tiles__png);
 
-		// Scale up our tilemap for display
-		tileMap.scale.set(SCALE_FACTOR, SCALE_FACTOR);
+		// Scale up our tilemap for display -- murders fps
 		tileMap.screenCenter();
+
+		tileMap.setTileProperties(TileType.VOID, NONE);
+		tileMap.setTileProperties(TileType.WALL, NONE);
+		tileMap.setTileProperties(TileType.ROOM, NONE);
+		tileMap.setTileProperties(TileType.HALL, NONE);
+		tileMap.setTileProperties(TileType.DOOR, NONE);
 
 		add(tileMap);
 	}
@@ -70,14 +87,13 @@ class PlayState extends FlxState
  *	      ":"
  *	    ___:____     |"\/"|
  *	  ,'        `.    \  /
- * 	 |  O        \___/  |
+ * 	 |  O         \___/  |
  * 	~^~^~^~^~^~^~^~^~^~^~^~^~
  * 
  * todo list
- * - null error on pathfinding (failed to find path)
+ * 
  *  - pathfinding is linear and requires weights based on tiletype
  * - at this point drunkards walk it
- * - switch to a celluar automta and make it cave like?
  * - camera follow a player (ask Cassandra for some sprites?) as they navigate the world
  * - get an actual tilemap
  * 
