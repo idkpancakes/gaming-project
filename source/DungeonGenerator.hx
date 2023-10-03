@@ -15,6 +15,7 @@ import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
 import haxe.ds.GenericStack;
+import openfl.display.Tile;
 
 enum abstract TileType(Int) to Int
 {
@@ -204,10 +205,7 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 
 		// getRoomsDepthFirstAttempt(caveData);
 		var result = getRoomsBrute(caveData);
-
-		Log.trace("RoomList: " + roomList);
-
-		return result;
+		return connectRooms(result);
 	}
 
 	// im starting to get how this is really inefficent, it requires you selecting two points that are within the same room before it'll remove all those points from the list.
@@ -268,6 +266,44 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 		// 		tileData[index] = HALL;
 
 		return FlxStringUtil.arrayToCSV(tileData, width);
+	}
+
+	static function connectRooms(caveCSV:String)
+	{
+		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
+
+		// setup collision properties! we really only want room to be impassable for the purposes of
+		tileMap.setTileProperties(WALL, NONE);
+		tileMap.setTileProperties(HALL, ANY);
+		tileMap.setTileProperties(DOOR, NONE);
+		tileMap.setTileProperties(ROOM, NONE);
+
+		// // itterate through every pair of possible rooms
+		for (room1 in roomList)
+		{
+			for (room2 in roomList.filter(x -> x != room1))
+			{
+				var r1Point = FlxG.random.getObject(room1);
+				var r2Point = FlxG.random.getObject(room2);
+
+				// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
+				var points = tileMap.findPath(tileMap.getTileCoordsByIndex(r1Point, false), tileMap.getTileCoordsByIndex(r2Point, false), NONE,
+					FlxTilemapDiagonalPolicy.NONE);
+
+				// ignore failed paths, fuck it
+				if (points == null)
+					points = [];
+
+				// hey it would just be awesome if this didn't fail to find the path, like just really great
+				for (i in 1...(points.length - 1))
+				{
+					tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
+				}
+			}
+		}
+
+		// cast all hall types to ROOM.
+		return FlxStringUtil.arrayToCSV(tileMap.getData().map(x -> return x == TileType.HALL ? TileType.ROOM : x), width);
 	}
 
 	/**
