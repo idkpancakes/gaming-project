@@ -203,7 +203,7 @@ class CaveDungeonGeneration
 		/**
 		 * alright so the idea of this is to adjust the tiles based on their neighbouring room tiles. 
 		 *  
-		 * option 1: hacky but you can just compute the path data again and the
+		 * option 1: hacky but you can just compute the path data again and wait can I just compute the pathData
 		 * 
 		 */
 
@@ -255,7 +255,7 @@ class CaveDungeonGeneration
 		return neighbors;
 	}
 
-	// given an CSV get the valid in bound direct
+	// given an CSV get the valid in bound directions
 	function getInBoundDirections(data:FlxPathfinderData, from:Int)
 	{
 		var x = data.getX(from);
