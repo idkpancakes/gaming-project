@@ -19,6 +19,18 @@ enum abstract TileType(Int) to Int
 	var ROOM = 2;
 	var HALL = 3;
 	var DOOR = 4;
+
+	var TOP_WALL = 5;
+	var TOP_RIGHT_Wall = 6;
+
+	var RIGHT_WALL = 7;
+
+	var BOTTOM_RIGHT_WALL = 8;
+	var BOTTOM_WALL = 9;
+	var BOTTOM_LEFT_WALL = 10;
+
+	var LEFT_WALL = 11;
+	var TOP_LEFT_WALL = 12;
 }
 
 class PlayState extends FlxState
@@ -40,7 +52,7 @@ class PlayState extends FlxState
 
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
 		// var standardDungeonCSV = DungeonGeneration.generateDungeon(WIDTH, HEIGHT);
-
+		Log.trace("final: " + caveDungeonCSV);
 		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
 		// tileMap.loadMapFromCSV(standardDungeonCSV, AssetPaths.black_white_tiles__png);
 
@@ -105,4 +117,7 @@ class PlayState extends FlxState
  * - item placement
  * 
  *
+ */
+/**
+ * *
  */

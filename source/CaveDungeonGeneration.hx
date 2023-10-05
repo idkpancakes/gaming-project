@@ -12,13 +12,20 @@ import flixel.tile.FlxBaseTilemap;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxArrayUtil;
 import flixel.util.FlxColor;
+import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
-import haxe.ds.GenericStack;
-import openfl.display.Tile;
 
-class CaveDungeonGeneration extends FlxDiagonalPathfinder
+/**
+ * TODO
+ * - Rooms aren't always connected, ensure connectivity
+ * - After connections process csv and adjust the wall edges based on their neighbors:
+ * - 1 wall to the right = rightFacingwall, 1 tile the right and up topRIght wall and so on
+ * 
+ * - 
+ */
+class CaveDungeonGeneration
 {
 	static public var tileMap:FlxTilemap = new FlxTilemap();
 
@@ -189,6 +196,71 @@ class CaveDungeonGeneration extends FlxDiagonalPathfinder
 
 		// cast all hall types to ROOM.
 		return FlxStringUtil.arrayToCSV(tileMap.getData().map(x -> return x == TileType.HALL ? TileType.ROOM : x), width);
+	}
+
+	static function prettifyRooms(caveCSV:String)
+	{
+		/**
+		 * alright so the idea of this is to adjust the tiles based on their neighbouring room tiles. 
+		 *  
+		 * option 1: hacky but you can just compute the path data again and the
+		 * 
+		 */
+
+		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
+	}
+
+	// I need to reowrk this so it can be passed the arary rather than the pathfinder data
+	static function getNeighbors(data:FlxPathfinderData, from:Int)
+	{
+		var neighbors = [];
+		var inBound = getInBoundDirections(data, from);
+		var up = inBound.has(UP);
+		var down = inBound.has(DOWN);
+		var left = inBound.has(LEFT);
+		var right = inBound.has(RIGHT);
+
+		inline function canGoHelper(to:Int, dir:FlxDirectionFlags)
+		{
+			return !data.isExcluded(to) && this.canGo(data, to, dir);
+		}
+
+		function addIf(condition:Bool, to:Int, dir:FlxDirectionFlags)
+		{
+			var condition = condition && canGoHelper(to, dir);
+			if (condition)
+				neighbors.push(to);
+
+			return condition;
+		}
+
+		var columns = data.map.widthInTiles;
+
+		// orthoginals
+		up = addIf(up, from - columns, UP);
+		down = addIf(down, from + columns, DOWN);
+		left = addIf(left, from - 1, LEFT);
+		right = addIf(right, from + 1, RIGHT);
+
+		// // diagonals
+		// if (diagonalPolicy != NONE)
+		// {
+		// 	// only allow diagonal when 2 orthoginals is possible
+		// 	addIf(up && left, from - columns - 1, UP | LEFT);
+		// 	addIf(up && right, from - columns + 1, UP | RIGHT);
+		// 	addIf(down && left, from + columns - 1, DOWN | LEFT);
+		// 	addIf(down && right, from + columns + 1, DOWN | RIGHT);
+		// }
+
+		return neighbors;
+	}
+
+	// given an CSV get the valid in bound direct
+	function getInBoundDirections(data:FlxPathfinderData, from:Int)
+	{
+		var x = data.getX(from);
+		var y = data.getY(from);
+		return FlxDirectionFlags.fromBools(x > 0, x < data.map.widthInTiles - 1, y > 0, y < data.map.heightInTiles - 1);
 	}
 
 	/**
