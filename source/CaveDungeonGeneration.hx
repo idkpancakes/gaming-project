@@ -1,3 +1,4 @@
+import PlayState.FinalTiles;
 import PlayState.TileType;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -22,17 +23,27 @@ import haxe.Log;
  * - Rooms aren't always connected, ensure connectivity
  * - After connections process csv and adjust the wall edges based on their neighbors:
  * - 1 wall to the right = rightFacingwall, 1 tile the right and up topRIght wall and so on
- * 
- * - 
  */
+typedef Neighbor =
+{
+	index:Int,
+	dir:FlxDirectionFlags
+}
+
+typedef Bitmask =
+{
+	index:Int,
+	dirBits:Array<FlxDirectionFlags>
+}
+
 class CaveDungeonGeneration
 {
 	static public var tileMap:FlxTilemap = new FlxTilemap();
 
 	static var roomList:Array<Array<Int>> = new Array();
 
-	static public var width:Int;
-	static public var height:Int;
+	static public var width:Int = 0;
+	static public var height:Int = 0;
 
 	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?smoothingItterations:Int = 15, ?wallRatio:Float = .45)
 	{
@@ -44,8 +55,6 @@ class CaveDungeonGeneration
 		roomList = new Array();
 
 		var caveData:String = FlxCaveGenerator.generateCaveString(_width, _height, smoothingItterations, wallRatio);
-
-		Log.trace(caveData);
 
 		// caveData returns things a 0 or 1, where we actually use 0 as null tile 1 as wall and 2 as pathway. so just increment everything by one
 		var tileMatrix = FlxStringUtil.toIntArray(caveData);
@@ -60,7 +69,10 @@ class CaveDungeonGeneration
 
 		// getRoomsDepthFirstAttempt(caveData);
 		var result = getRoomsBrute(caveData);
-		return connectRooms(result);
+		result = connectRooms(result);
+
+		result = prettifyRooms(result);
+		return result;
 	}
 
 	// im starting to get how this is really inefficient, it requires you selecting two points that are within the same room before it'll remove all those points from the list.
@@ -120,11 +132,6 @@ class CaveDungeonGeneration
 
 		var tileData = tileMap.getData();
 
-		// // debug to color rooms
-		// for (room in roomList)
-		// 	for (index in room)
-		// 		tileData[index] = HALL;
-
 		return FlxStringUtil.arrayToCSV(tileData, width);
 	}
 
@@ -133,16 +140,16 @@ class CaveDungeonGeneration
 		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
 
 		// setup collision properties! we really only want room to be impassable for the purposes of
-		tileMap.setTileProperties(WALL, NONE);
-		tileMap.setTileProperties(DOOR, NONE);
-		tileMap.setTileProperties(ROOM, NONE);
+		tileMap.setTileProperties(TileType.WALL, NONE);
+		tileMap.setTileProperties(TileType.DOOR, NONE);
+		tileMap.setTileProperties(TileType.ROOM, NONE);
 
 		// not allowed ot use existing paths
-		tileMap.setTileProperties(HALL, ANY);
+		tileMap.setTileProperties(TileType.HALL, ANY);
 
 		var roomListCopy = [].concat(roomList);
 
-		// This will produce less paths but does not promise all rooms will be connected
+		// This will produce less paths but does not promise all rooms will be connected actually if they are all connected its just luck
 
 		while (roomListCopy.length > 1)
 		{
@@ -169,72 +176,130 @@ class CaveDungeonGeneration
 			}
 		}
 
-		// // itterate through every pair of possible rooms (Non duplicate) -- this causes the maximum amount of paths, and looks off
-
-		// for (room1 in roomList)
-		// {
-		// 	for (room2 in roomList.filter(x -> x != room1))
-		// 	{
-		// 		var r1Point = FlxG.random.getObject(room1);
-		// 		var r2Point = FlxG.random.getObject(room2);
-
-		// 		// We use NONE for simplicication because we actually want each and every point, even if it's in a straight line (greedy algo)
-		// 		var points = tileMap.findPath(tileMap.getTileCoordsByIndex(r1Point, false), tileMap.getTileCoordsByIndex(r2Point, false), NONE,
-		// 			FlxTilemapDiagonalPolicy.NONE);
-
-		// 		// ignore failed paths, fuck it
-		// 		if (points == null)
-		// 			points = [];
-
-		// 		// hey it would just be awesome if this didn't fail to find the path, like just really great
-		// 		for (i in 1...(points.length - 1))
-		// 		{
-		// 			tileMap.setTile(Math.floor(points[i].x / 8), Math.floor(points[i].y / 8), TileType.HALL);
-		// 		}
-		// 	}
-		// }
-
 		// cast all hall types to ROOM.
 		return FlxStringUtil.arrayToCSV(tileMap.getData().map(x -> return x == TileType.HALL ? TileType.ROOM : x), width);
 	}
 
 	static function prettifyRooms(caveCSV:String)
 	{
+		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
+
+		var data:Array<Int> = FlxStringUtil.toIntArray(caveCSV);
+
+		var wallTiles = tileMap.getTileInstances(TileType.WALL);
+
+		var bitmaskData:Array<Bitmask> = new Array();
+
+		for (tileIndex in wallTiles)
+		{
+			// just get the neighboring room tiles
+			var neighbors = getNeighbors(data, tileIndex).filter(n -> tileMap.getTileByIndex(n.index) == TileType.ROOM);
+
+			// if no valid neighbors skip -- after this point we only have "edge" tiles -- orthognal
+			if (neighbors.length == 0)
+				continue;
+
+			// var dirList:Array<FlxDirectionFlags> = [for (n in neighbors) n.dir];
+			var bitmask:Bitmask = {index: tileIndex, dirBits: [for (n in neighbors) n.dir]};
+			bitmaskData.push(bitmask);
+		}
+
+		// it works!!!
+		Log.trace("bitmaskData: " + bitmaskData);
+
+		// alright now we jsut need to modify the tiles based on the bitmask data. -- Time to make a conversion enum
 		/**
-		 * alright so the idea of this is to adjust the tiles based on their neighbouring room tiles. 
-		 *  
-		 * option 1: hacky but you can just compute the path data again and wait can I just compute the pathData
+		 * there are two concepts that make this possible:
 		 * 
+		 *  1) the sum of any two distinct 4 bit strings is also distinct 
+		 * 	2) ?
+		 * 
+		 * 	
 		 */
 
-		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
+		data = tileMap.getData();
+
+		// clear all old walls
+		data = data.map(d -> d = d == TileType.WALL ? FinalTiles.VOID : d);
+
+		// apply the mask!
+		for (mask in bitmaskData)
+			data[mask.index] = convertDirToTileType(mask.dirBits);
+
+		// conver to new room tile
+		data = data.map(d -> d = d == TileType.ROOM ? FinalTiles.ROOM : d);
+
+		return FlxStringUtil.arrayToCSV(data, width);
 	}
 
-	// I need to reowrk this so it can be passed the arary rather than the pathfinder data
-	static function getNeighbors(data:FlxPathfinderData, from:Int)
+	static function convertDirToTileType(dirs:Array<Int>)
+	{
+		var dirVal = 0;
+		for (dir in dirs)
+			dirVal += dir;
+
+		// cases for each combo of directions, although bitwise opperands would have worked -- fuck that though
+		switch (dirVal)
+		{
+			// UP
+			case 0x0100:
+				return FinalTiles.WALL_UP;
+
+			// DOWN
+			case 0x1000:
+				return FinalTiles.WALL_DOWN;
+
+			// LEFT
+			case 0x0001:
+				return FinalTiles.WALL_LEFT;
+
+			// RIGHT
+			case 0x0010:
+				return FinalTiles.WALL_RIGHT;
+
+			// UP_LEFT
+			case 0x0101:
+				return FinalTiles.WALL_UP_LEFT;
+
+			// UP_RIGHT
+			case 0x0110:
+				return FinalTiles.WALL_UP_RIGHT;
+
+			// DOWN_LEFT
+			case 0x1001:
+				return FinalTiles.WALL_DOWN_LEFT;
+
+			// DOWN_RIGHT
+			case 0x1010:
+				return FinalTiles.WALL_DOWN_RIGHT;
+		}
+
+		return FinalTiles.ROOM;
+	}
+
+	/**
+	 * function to get the neighbors of a given tile in a matrix
+	 * @param data Array to check 
+	 * @param from index of the tile you wish to get the neighbors of
+	 */
+	static function getNeighbors(data:Array<Int>, from:Int):Array<Neighbor>
 	{
 		var neighbors = [];
 		var inBound = getInBoundDirections(data, from);
+
 		var up = inBound.has(UP);
 		var down = inBound.has(DOWN);
 		var left = inBound.has(LEFT);
 		var right = inBound.has(RIGHT);
 
-		inline function canGoHelper(to:Int, dir:FlxDirectionFlags)
-		{
-			return !data.isExcluded(to) && this.canGo(data, to, dir);
-		}
-
 		function addIf(condition:Bool, to:Int, dir:FlxDirectionFlags)
 		{
-			var condition = condition && canGoHelper(to, dir);
 			if (condition)
-				neighbors.push(to);
-
+				neighbors.push({index: to, dir: dir});
 			return condition;
 		}
 
-		var columns = data.map.widthInTiles;
+		var columns = width;
 
 		// orthoginals
 		up = addIf(up, from - columns, UP);
@@ -242,25 +307,20 @@ class CaveDungeonGeneration
 		left = addIf(left, from - 1, LEFT);
 		right = addIf(right, from + 1, RIGHT);
 
-		// // diagonals
-		// if (diagonalPolicy != NONE)
-		// {
-		// 	// only allow diagonal when 2 orthoginals is possible
-		// 	addIf(up && left, from - columns - 1, UP | LEFT);
-		// 	addIf(up && right, from - columns + 1, UP | RIGHT);
-		// 	addIf(down && left, from + columns - 1, DOWN | LEFT);
-		// 	addIf(down && right, from + columns + 1, DOWN | RIGHT);
-		// }
-
 		return neighbors;
 	}
 
-	// given an CSV get the valid in bound directions
-	function getInBoundDirections(data:FlxPathfinderData, from:Int)
+	/**
+	 * Get valid directions from a given index in a flattened 2D array
+	 * @param data
+	 * @param from
+	 */
+	static function getInBoundDirections(data:Array<Int>, from:Int,)
 	{
-		var x = data.getX(from);
-		var y = data.getY(from);
-		return FlxDirectionFlags.fromBools(x > 0, x < data.map.widthInTiles - 1, y > 0, y < data.map.heightInTiles - 1);
+		var _2dIndex = flatTo2DIndex(from);
+
+		// left, right, up, down -- math should be correct
+		return FlxDirectionFlags.fromBools(_2dIndex.x<width, _2dIndex.x>0, _2dIndex.y > 0, _2dIndex.y < height);
 	}
 
 	/**
@@ -288,3 +348,7 @@ class CaveDungeonGeneration
 		return roomList;
 	}
 }
+/**
+ * bitmasking is pretty much what im attempting to do with the map gen, look into it
+ * 
+ */

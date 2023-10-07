@@ -12,6 +12,7 @@ import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
 
+// update this to the actual index just for wall up down and left.
 enum abstract TileType(Int) to Int
 {
 	var VOID = 0;
@@ -19,18 +20,34 @@ enum abstract TileType(Int) to Int
 	var ROOM = 2;
 	var HALL = 3;
 	var DOOR = 4;
+}
 
-	var TOP_WALL = 5;
-	var TOP_RIGHT_Wall = 6;
+/**
+ * assumign we're just straight using the tileset from the download pack
+ */
+enum abstract FinalTiles(Int) to Int
+{
+	var ROOM = 6;
 
-	var RIGHT_WALL = 7;
+	// var WALL_UP = 1;
+	// var WALL_DOWN = 7;
+	// var WALL_LEFT = 3;
+	// var WALL_RIGHT = 5;
+	// var WALL_UP_LEFT = 0;
+	// var WALL_UP_RIGHT = 2;
+	// var WALL_DOWN_LEFT = 6;
+	// var WALL_DOWN_RIGHT = 8;
+	// var VOID = 9;
+	var WALL_UP = 11;
+	var WALL_DOWN = 1;
+	var WALL_LEFT = 7;
+	var WALL_RIGHT = 5;
 
-	var BOTTOM_RIGHT_WALL = 8;
-	var BOTTOM_WALL = 9;
-	var BOTTOM_LEFT_WALL = 10;
-
-	var LEFT_WALL = 11;
-	var TOP_LEFT_WALL = 12;
+	var WALL_UP_LEFT = 3;
+	var WALL_UP_RIGHT = 4;
+	var WALL_DOWN_LEFT = 8;
+	var WALL_DOWN_RIGHT = 9;
+	var VOID = 14;
 }
 
 class PlayState extends FlxState
@@ -45,25 +62,31 @@ class PlayState extends FlxState
 	{
 		super.create();
 
+		// match height to game window -- slow because of level gen innefficencies
 		// final WIDTH:Int = Math.floor(FlxG.width / 8);
 		// final HEIGHT:Int = Math.floor(FlxG.height / 8);
+
+		var backGround = new FlxSprite();
+		backGround.loadGraphic(AssetPaths.bg_resized__png);
+		add(backGround);
 
 		tileMap = new FlxTilemap();
 
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
-		// var standardDungeonCSV = DungeonGeneration.generateDungeon(WIDTH, HEIGHT);
 		Log.trace("final: " + caveDungeonCSV);
-		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
+
+		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.tile_set_8x8__png, 8, 8);
+
+		// tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
 		// tileMap.loadMapFromCSV(standardDungeonCSV, AssetPaths.black_white_tiles__png);
 
-		// Scale up our tilemap for display -- murders fps
 		tileMap.screenCenter();
-
-		tileMap.setTileProperties(TileType.VOID, NONE);
-		tileMap.setTileProperties(TileType.WALL, NONE);
-		tileMap.setTileProperties(TileType.ROOM, NONE);
-		tileMap.setTileProperties(TileType.HALL, NONE);
-		tileMap.setTileProperties(TileType.DOOR, NONE);
+		// tileMap.scale.set(0.25, 0.25);
+		// tileMap.setTileProperties(TileType.VOID, NONE);
+		// tileMap.setTileProperties(TileType.WALL, NONE);
+		// tileMap.setTileProperties(TileType.ROOM, NONE);
+		// tileMap.setTileProperties(TileType.HALL, NONE);
+		// tileMap.setTileProperties(TileType.DOOR, NONE);
 
 		add(tileMap);
 	}
