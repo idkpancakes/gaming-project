@@ -199,13 +199,15 @@ class CaveDungeonGeneration
 			if (neighbors.length == 0)
 				continue;
 
+			Log.trace("index: " + tileIndex + " neigh: " + neighbors);
+
 			// var dirList:Array<FlxDirectionFlags> = [for (n in neighbors) n.dir];
 			var bitmask:Bitmask = {index: tileIndex, dirBits: [for (n in neighbors) n.dir]};
 			bitmaskData.push(bitmask);
 		}
 
 		// it works!!!
-		Log.trace("bitmaskData: " + bitmaskData);
+		// Log.trace("bitmaskData: " + bitmaskData);
 
 		// alright now we jsut need to modify the tiles based on the bitmask data. -- Time to make a conversion enum
 		/**
@@ -320,7 +322,7 @@ class CaveDungeonGeneration
 		var _2dIndex = flatTo2DIndex(from);
 
 		// left, right, up, down -- math should be correct
-		return FlxDirectionFlags.fromBools(_2dIndex.x<width, _2dIndex.x>0, _2dIndex.y > 0, _2dIndex.y < height);
+		return FlxDirectionFlags.fromBools(_2dIndex.x > 0, _2dIndex.x < width - 1, _2dIndex.y > 0, _2dIndex.y < height - 1);
 	}
 
 	/**
@@ -348,7 +350,3 @@ class CaveDungeonGeneration
 		return roomList;
 	}
 }
-/**
- * bitmasking is pretty much what im attempting to do with the map gen, look into it
- * 
- */
