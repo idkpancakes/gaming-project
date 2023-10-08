@@ -83,8 +83,6 @@ class PlayState extends FlxState
 		tileMap = new FlxTilemap();
 
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
-		Log.trace("final: " + caveDungeonCSV);
-
 		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.tile_set_expanded__png, 8, 8);
 
 		// tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
@@ -92,11 +90,23 @@ class PlayState extends FlxState
 
 		tileMap.screenCenter();
 		// tileMap.scale.set(0.25, 0.25);
-		// tileMap.setTileProperties(TileType.VOID, NONE);
-		// tileMap.setTileProperties(TileType.WALL, NONE);
-		// tileMap.setTileProperties(TileType.ROOM, NONE);
-		// tileMap.setTileProperties(TileType.HALL, NONE);
-		// tileMap.setTileProperties(TileType.DOOR, NONE);
+		tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+		tileMap.setTileProperties(FinalTiles.VOID, NONE);
+		tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
 
 		add(tileMap);
 	}
