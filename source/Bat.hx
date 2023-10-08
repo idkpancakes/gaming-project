@@ -18,7 +18,7 @@ class Bat extends Enemy
 		animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
 	}
 
-	public function attack(player:Player, enemy:Enemy)
+	public function attack(player:Player, enemy:Bat)
 	{
 		inRange(player, enemy);
 

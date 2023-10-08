@@ -1,15 +1,21 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
+	var weapon:Weapons;
+
 	// static inline var SPEED:Float = 100;
 	public function new(x:Float = 0, y:Float = 0)
 	{
 		super(x, y);
 		loadGraphic(AssetPaths.mainCharacterTexture__png, true, 22, 42);
 		solid = true;
+
+		scale.x = 2;
+		scale.y = 2;
 		// drag.x = drag.y = 800;
 
 		setFacingFlip(LEFT, false, false);
@@ -38,5 +44,55 @@ class Player extends FlxSprite
 
 		animation.add("deadLeft", [8], 5, true);
 		animation.add("deadRight", [17], 5, true);
+	}
+
+	public function charMovement(sprite:Player)
+	{
+		if (FlxG.keys.pressed.D) // moving sprite to the right when D is pressed
+		{
+			sprite.animation.play("runLeft");
+			sprite.velocity.x = 100;
+		}
+		if (FlxG.keys.justReleased.D) // stopping movement once it is released
+		{
+			sprite.animation.play("standingLeft");
+			sprite.velocity.x = 0;
+		}
+		if (FlxG.keys.pressed.A) // moving sprite move left when A is pressed
+		{
+			sprite.animation.play("runLeft");
+			sprite.velocity.x = -100;
+		}
+		if (FlxG.keys.justReleased.A) // stopping movement once A is released
+		{
+			sprite.animation.play("standingLeft");
+			sprite.velocity.x = 0;
+		}
+
+		if (FlxG.keys.pressed.W) // moving sprite up when W is pressed
+		{
+			sprite.animation.play("runUp");
+			sprite.velocity.y = -100;
+		}
+		if (FlxG.keys.justReleased.W) // stopping movement once it is released
+		{
+			sprite.animation.play("standingUP");
+			sprite.velocity.y = 0;
+		}
+		if (FlxG.keys.pressed.S) // moving sprite down when S is pressed
+		{
+			sprite.animation.play("runDown");
+			sprite.velocity.y = 200;
+		}
+		if (FlxG.keys.justReleased.S) // stopping movement once A is released
+		{
+			sprite.animation.play("standingDown");
+			sprite.velocity.y = 0;
+		}
+
+		if (sprite.velocity.x > 0)
+			sprite.facing = RIGHT;
+		else
+			sprite.facing = LEFT;
 	}
 }

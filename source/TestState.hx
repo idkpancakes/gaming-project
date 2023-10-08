@@ -1,8 +1,11 @@
 package;
 
+import CaveDungeonGeneration.CaveDungeonGeneration;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 
 enum abstract TileType(Int) to Int
@@ -14,44 +17,111 @@ enum abstract TileType(Int) to Int
 	var DOOR = 4;
 }
 
+enum abstract FinalTiles(Int) to Int
+{
+	var ROOM = 9;
+
+	// var WALL_UP = 1;
+	// var WALL_DOWN = 7;
+	// var WALL_LEFT = 3;
+	// var WALL_RIGHT = 5;
+	// var WALL_UP_LEFT = 0;
+	// var WALL_UP_RIGHT = 2;
+	// var WALL_DOWN_LEFT = 6;
+	// var WALL_DOWN_RIGHT = 8;
+	// var VOID = 9;
+	//
+	var WALL_UP = 17;
+	var WALL_DOWN = 1; //
+	var WALL_LEFT = 10;
+	var WALL_RIGHT = 8;
+
+	var WALL_UP_LEFT = 3;
+	var WALL_UP_RIGHT = 4;
+	var WALL_DOWN_LEFT = 11;
+	var WALL_DOWN_RIGHT = 12;
+
+	var VOID = 100;
+
+	var TORCH = 27;
+	var FIRE = 28;
+
+	var CHEST = 40;
+	var HEART = 45;
+
+	var FLOOR_0 = 14;
+	var FLOOR_1 = 15;
+	var FLOOR_2 = 22;
+}
+
 class TestState extends FlxState
 {
 	var player:Player;
 
-	var bat:Bat;
+	var bat1:Bat;
+	var wep:Weapons;
+
 	var cam:FlxCamera;
+	var hudCam:FlxCamera;
 
 	var tileMap:FlxTilemap;
 
+	var batGroup:FlxTypedGroup<Bat>;
+
+	public var hud:OverheadUI;
+
+	var health:Int = 3;
+
 	override public function create()
 	{
-		bat = new Bat(300, 450);
-		add(bat);
+		var backGround = new FlxSprite();
+		backGround.loadGraphic(AssetPaths.bg_resized__png);
+		add(backGround);
 
 		tileMap = new FlxTilemap();
 
-		tileMap.loadMapFromCSV(AssetPaths.map__csv, AssetPaths.bigBoy__png);
-		// tileMap.setTileProperties(TileType.VOID, NONE);
-		tileMap.setTileProperties(TileType.WALL, ANY);
-		tileMap.setTileProperties(TileType.ROOM, NONE);
-		tileMap.follow();
-		// tileMap.scale.x = 6;
-		// tileMap.scale.y = 6;
-
-		// tileMap.up
-
-		add(tileMap);
+		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(32, 32);
+		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.biggerBoy__png, 48, 48);
 
 		tileMap.screenCenter();
+
+		tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+		tileMap.setTileProperties(FinalTiles.VOID, ANY);
+		tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+		tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+
+		tileMap.follow();
+
+		add(tileMap);
+		hud = new OverheadUI();
+		add(hud);
 
 		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)));
 		player = new Player(startPoint.x, startPoint.y);
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
-		FlxG.cameras.reset(cam);
+		FlxG.cameras.add(cam);
 		cam.target = player;
 		add(player);
 
+		hud.setPosition(cam.scroll.x, cam.scroll.y);
+
+		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
+		add(wep);
 		super.create();
 	}
 
@@ -59,59 +129,23 @@ class TestState extends FlxState
 	{
 		super.update(elapsed);
 
-		charMovement(player);
+		player.charMovement(player);
 		FlxG.collide(player, tileMap);
+		FlxG.collide(batGroup, tileMap);
 
-		bat.attack(player, bat);
-	}
-
-	public function charMovement(sprite:Player)
-	{
-		if (FlxG.keys.pressed.D) // moving sprite to the right when D is pressed
+		if (FlxG.overlap(player, wep) && FlxG.keys.justPressed.SPACE)
 		{
-			sprite.animation.play("runLeft");
-			sprite.velocity.x = 50;
+			hud.setWeapon(wep);
 		}
-		if (FlxG.keys.justReleased.D) // stopping movement once it is released
-		{
-			sprite.animation.play("standingLeft");
-			sprite.velocity.x = 0;
-		}
-		if (FlxG.keys.pressed.A) // moving sprite move left when A is pressed
-		{
-			sprite.animation.play("runLeft");
-			sprite.velocity.x = -50;
-		}
-		if (FlxG.keys.justReleased.A) // stopping movement once A is released
-		{
-			sprite.animation.play("standingLeft");
-			sprite.velocity.x = 0;
-		}
-
-		if (FlxG.keys.pressed.W) // moving sprite up when W is pressed
-		{
-			sprite.animation.play("runUp");
-			sprite.velocity.y = -50;
-		}
-		if (FlxG.keys.justReleased.W) // stopping movement once it is released
-		{
-			sprite.animation.play("standingUP");
-			sprite.velocity.y = 0;
-		}
-		if (FlxG.keys.pressed.S) // moving sprite down when S is pressed
-		{
-			sprite.animation.play("runDown");
-			sprite.velocity.y = 50;
-		}
-		if (FlxG.keys.justReleased.S) // stopping movement once A is released
-		{
-			sprite.animation.play("standingDown");
-			sprite.velocity.y = 0;
-		}
-
-		if (sprite.velocity.x > 0)
-			sprite.facing = RIGHT;
-		else
-			sprite.facing = LEFT;
 	}
 }
+/**
+	*JERRY
+	*       _.---._    /\\
+	*    ./'       "--`\//
+	*  ./              o \
+	* /./\  )______   \__ \
+	*./  / /\ \   | \ \  \ \
+	*   / /  \ \  | |\ \  \7
+	*    "     "    "  "        VK
+**/

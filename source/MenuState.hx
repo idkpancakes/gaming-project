@@ -5,13 +5,14 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
 
 class MenuState extends FlxState
 {
 	var playButton:FlxButton;
+	var storyText:FlxText;
 
 	override public function create()
 	{
