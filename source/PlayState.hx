@@ -27,7 +27,7 @@ enum abstract TileType(Int) to Int
  */
 enum abstract FinalTiles(Int) to Int
 {
-	var ROOM = 6;
+	var ROOM = 9;
 
 	// var WALL_UP = 1;
 	// var WALL_DOWN = 7;
@@ -38,22 +38,27 @@ enum abstract FinalTiles(Int) to Int
 	// var WALL_DOWN_LEFT = 6;
 	// var WALL_DOWN_RIGHT = 8;
 	// var VOID = 9;
-	var WALL_UP = 11;
+	var WALL_UP = 17;
 	var WALL_DOWN = 1;
-	var WALL_LEFT = 7;
-	var WALL_RIGHT = 5;
+	var WALL_LEFT = 10;
+	var WALL_RIGHT = 8;
 
 	var WALL_UP_LEFT = 3;
 	var WALL_UP_RIGHT = 4;
-	var WALL_DOWN_LEFT = 8;
-	var WALL_DOWN_RIGHT = 9;
-	var VOID = 14;
+	var WALL_DOWN_LEFT = 11;
+	var WALL_DOWN_RIGHT = 12;
+	var VOID = 40;
+
+	var TORCH = 27;
+	var FIRE = 28;
+
+	var FLOOR_0 = 14;
+	var FLOOR_1 = 15;
+	var FLOOR_2 = 22;
 }
 
 class PlayState extends FlxState
 {
-	public static final SCALE_FACTOR = 0.25;
-
 	final WIDTH:Int = 32;
 	final HEIGHT:Int = 32;
 	var tileMap = new FlxTilemap();
@@ -75,7 +80,7 @@ class PlayState extends FlxState
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
 		Log.trace("final: " + caveDungeonCSV);
 
-		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.tile_set_8x8__png, 8, 8);
+		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.tile_set_expanded__png, 8, 8);
 
 		// tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.black_white_tiles__png);
 		// tileMap.loadMapFromCSV(standardDungeonCSV, AssetPaths.black_white_tiles__png);

@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.tile.FlxCaveGenerator;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.path.FlxPath;
@@ -54,6 +55,10 @@ class CaveDungeonGeneration
 		tileMap = new FlxTilemap();
 		roomList = new Array();
 
+		var tmp = new FlxSpriteGroup();
+
+		tmp.allowCollisions = ANY;
+
 		var caveData:String = FlxCaveGenerator.generateCaveString(_width, _height, smoothingItterations, wallRatio);
 
 		// caveData returns things a 0 or 1, where we actually use 0 as null tile 1 as wall and 2 as pathway. so just increment everything by one
@@ -70,8 +75,11 @@ class CaveDungeonGeneration
 		// getRoomsDepthFirstAttempt(caveData);
 		var result = getRoomsBrute(caveData);
 		result = connectRooms(result);
+		result = bitmaskRooms(result);
 
-		result = prettifyRooms(result);
+		result = decorateLevel(result, 0.1, [FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]);
+		result = decorateLevel(result, 0.01, [FinalTiles.TORCH, FinalTiles.FIRE]);
+
 		return result;
 	}
 
@@ -180,14 +188,38 @@ class CaveDungeonGeneration
 		return FlxStringUtil.arrayToCSV(tileMap.getData().map(x -> return x == TileType.HALL ? TileType.ROOM : x), width);
 	}
 
-	static function prettifyRooms(caveCSV:String)
+	static function bitmaskRooms(caveCSV:String)
 	{
+		/**
+		 * I need to add a border padding to the grid to prevent rooms without border walls ! 
+		 * 
+		 *  how the hell do I do that,
+		 * 
+		 * or I could just set the rows 
+		 */
+
 		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
 
-		var data:Array<Int> = FlxStringUtil.toIntArray(caveCSV);
+		for (i in 0...width)
+		{
+			var bottomOffset = width * (height - 1); // ?
+
+			// top row
+			tileMap.setTileByIndex(i, TileType.WALL);
+
+			// left col
+			tileMap.setTileByIndex(i * width, TileType.WALL);
+
+			// right col
+			tileMap.setTileByIndex(Math.floor(Math.max(0, (i * width) - 1)), TileType.WALL);
+
+			// bottom col
+			tileMap.setTileByIndex(i + bottomOffset, TileType.WALL);
+		}
+
+		var data = tileMap.getData();
 
 		var wallTiles = tileMap.getTileInstances(TileType.WALL);
-
 		var bitmaskData:Array<Bitmask> = new Array();
 
 		for (tileIndex in wallTiles)
@@ -206,19 +238,6 @@ class CaveDungeonGeneration
 			bitmaskData.push(bitmask);
 		}
 
-		// it works!!!
-		// Log.trace("bitmaskData: " + bitmaskData);
-
-		// alright now we jsut need to modify the tiles based on the bitmask data. -- Time to make a conversion enum
-		/**
-		 * there are two concepts that make this possible:
-		 * 
-		 *  1) the sum of any two distinct 4 bit strings is also distinct 
-		 * 	2) ?
-		 * 
-		 * 	
-		 */
-
 		data = tileMap.getData();
 
 		// clear all old walls
@@ -233,6 +252,34 @@ class CaveDungeonGeneration
 
 		return FlxStringUtil.arrayToCSV(data, width);
 	}
+
+	/**
+	 * https://www.youtube.com/watch?v=EUtA0AbYNic&t=1309s -> do it
+	 * @param caveCSV 
+	 * @param ratio 
+	 * @param itemSet 
+	 * @return String
+	 */
+	static function decorateLevel(caveCSV:String, ratio:Float, itemSet:Array<FinalTiles>):String
+	{
+		// import as tileMap
+		tileMap.loadMapFromCSV(caveCSV, AssetPaths.tile_set_expanded__png);
+
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+
+		var itemCount = Math.floor(roomTiles.length * ratio);
+
+		// technicaly could set the same one twice,
+		for (i in 0...itemCount)
+		{
+			tileMap.setTileByIndex(FlxG.random.getObject(roomTiles), FlxG.random.getObject(itemSet));
+			// tileMap.setTileByIndex(FlxG.random.getObject(roomTiles), FlxG.random.getObject([FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]));
+		}
+
+		return FlxStringUtil.arrayToCSV(tileMap.getData(), width);
+	}
+
+	// Helper methods
 
 	static function convertDirToTileType(dirs:Array<Int>)
 	{
