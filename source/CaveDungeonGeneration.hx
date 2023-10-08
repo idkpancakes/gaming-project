@@ -79,6 +79,8 @@ class CaveDungeonGeneration
 
 		result = decorateLevel(result, 0.1, [FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]);
 		result = decorateLevel(result, 0.01, [FinalTiles.TORCH, FinalTiles.FIRE]);
+		result = decorateLevel(result, 0.01, [FinalTiles.CHEST]);
+		result = decorateLevel(result, 0.01, [FinalTiles.HEART]);
 
 		return result;
 	}
@@ -263,7 +265,7 @@ class CaveDungeonGeneration
 	static function decorateLevel(caveCSV:String, ratio:Float, itemSet:Array<FinalTiles>):String
 	{
 		// import as tileMap
-		tileMap.loadMapFromCSV(caveCSV, AssetPaths.tile_set_expanded__png);
+		tileMap.loadMapFromCSV(caveCSV, AssetPaths.tile_set_expanded__png, 8, 8);
 
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 

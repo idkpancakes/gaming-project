@@ -38,8 +38,9 @@ enum abstract FinalTiles(Int) to Int
 	// var WALL_DOWN_LEFT = 6;
 	// var WALL_DOWN_RIGHT = 8;
 	// var VOID = 9;
+	//
 	var WALL_UP = 17;
-	var WALL_DOWN = 1;
+	var WALL_DOWN = 1; //
 	var WALL_LEFT = 10;
 	var WALL_RIGHT = 8;
 
@@ -47,10 +48,14 @@ enum abstract FinalTiles(Int) to Int
 	var WALL_UP_RIGHT = 4;
 	var WALL_DOWN_LEFT = 11;
 	var WALL_DOWN_RIGHT = 12;
-	var VOID = 40;
+
+	var VOID = 100;
 
 	var TORCH = 27;
 	var FIRE = 28;
+
+	var CHEST = 40;
+	var HEART = 45;
 
 	var FLOOR_0 = 14;
 	var FLOOR_1 = 15;
