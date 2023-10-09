@@ -111,7 +111,13 @@ class PlayState extends FlxState
 		// build our light sources
 		lightSources = new FlxSpriteGroup();
 
-		var torches = CaveDungeonGeneration.placeEntities(tileMap, 0.01, AssetPaths.torch__png);
+		// build our template to pass to the entity method
+		var torchTemplate = new FlxSprite();
+		torchTemplate.loadGraphic(AssetPaths.torch_animated__png, true, 8, 8);
+		torchTemplate.animation.add("fire", [0, 1], 3);
+		torchTemplate.animation.play("fire");
+
+		var torches = CaveDungeonGeneration.placeEntities(tileMap, 0.01, torchTemplate);
 		torches.forEach(t -> lightSources.add(t));
 
 		add(lightSources);
@@ -128,8 +134,9 @@ class PlayState extends FlxState
 
 		// player.camera = bgCam;
 		// lightSources.forEach(light -> light.camera = bgCam);
-
+		lightSources.camera = bgCam;
 		backGround.camera = bgCam;
+
 		FlxG.cameras.setDefaultDrawTarget(bgCam, false);
 
 		/* shaderCam draws the foreground elements (except the gem), then passes that as input to
@@ -140,6 +147,9 @@ class PlayState extends FlxState
 		FlxG.cameras.add(shaderCam);
 		shaderCam.bgColor = 0x0;
 
+		// testing -- remove to show cassandra
+		// tileMap.camera = shaderCam;
+
 		shaders = [for (light in lightSources) new Shader()];
 
 		// shader = new Shader();
@@ -147,7 +157,7 @@ class PlayState extends FlxState
 		// add the bg camera as an image to the shader so we can add color effects to it
 		bgCam.buffer = new BitmapData(bgCam.width, bgCam.height);
 
-		// shader.bgImage.input = bgCam.buffer;
+		// // shader.bgImage.input = bgCam.buffer;
 
 		for (shader in shaders)
 		{
@@ -155,7 +165,8 @@ class PlayState extends FlxState
 		}
 
 		var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
-		shaderCam.setFilters(filters);
+		shaderCam.setFilters([filters[0]]);
+		// shaderCam.setFilters(filters);
 	}
 
 	override function update(elapsed:Float)
@@ -163,13 +174,13 @@ class PlayState extends FlxState
 		super.update(elapsed);
 
 		inline function random(mean:Float)
-			return FlxG.random.floatNormal(mean, mean / 8);
+			return FlxG.random.floatNormal(mean, mean / 16); // higher divisor is less flicker
 
 		for (i in 0...lightSources.length)
 		{
 			var light = lightSources.members[i];
-			shaders[i].setOrigin((light.x) / FlxG.width, (light.y) / FlxG.height);
-			// shaders[i].setOrigin((light.x + random(light.origin.x)) / FlxG.width, (light.y + random(light.origin.y)) / FlxG.height);
+			// shaders[i].setOrigin((light.x + light.origin.x) / FlxG.width, (light.y + light.origin.y) / FlxG.height);
+			shaders[i].setOrigin((light.x + random(light.origin.x)) / FlxG.width, (light.y + random(light.origin.y)) / FlxG.height);
 		}
 	}
 

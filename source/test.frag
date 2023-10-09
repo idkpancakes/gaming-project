@@ -12,15 +12,15 @@ uniform vec2 openfl_TextureSize;
 
 //header manual import end
 
-uniform sampler2D bgImage;
-uniform vec2 uOrigin;
-uniform float uScale;
-uniform float uGlowRadius;
+		uniform sampler2D bgImage;	
+		uniform vec2 uOrigin;
+		uniform float uScale;
+		uniform float uGlowRadius;
 
-// I added this! adjust as needed to change dim setting, will apply to both FG and BG -- zurtar
-const float dimFactor=.8;
+		// I added this! adjust as needed to change dim setting, will apply to both FG and BG -- zurtar
+		const float dimFactor = 0.8;
 
-vec2 scalePos(vec2 p,float scale)
+	vec2 scalePos(vec2 p,float scale)
 {
     vec2 origin=uOrigin;// / openfl_TextureSize;
     return origin+(p-origin)/scale;
@@ -33,7 +33,7 @@ float getShadow(vec2 p)
     
     for(float scale=1.;scale<2.;scale+=.02)
     {
-        shadowAmount = max(shadowAmount,texture2D(bitmap,scalePos(p,scale)).a);
+        shadowAmount=max(shadowAmount,texture2D(bitmap,scalePos(p,scale)).a);
     }
     return shadowAmount;
 }
@@ -46,15 +46,29 @@ float getGlow(vec2 p)
     return 1.-smoothstep(uGlowRadius*.5,uGlowRadius,length(p));
 }
 
-const vec4 fgGlow=vec4(.7412,.251,.0235,.5);
+const vec4 fgGlow = vec4(.7412,.251,.0235,.5);
 
 vec4 applyFgGlow(vec4 fg,float glowAmount)
 {
     vec3 glowRgb=fgGlow.rgb*fgGlow.a*glowAmount;
     vec3 mult=fg.rgb*glowRgb;
     vec3 add=fg.rgb+glowRgb;
+        
+    return vec4((mult+add) * dimFactor,fg.a);
+}
+
+const vec3 unshadedRgb=vec3(.6,.6,1.);
+const vec4 shadeColor=vec4(0.,0.,.4,.6);
+const vec4 bgGlow=vec4(1.,.125,0.,.25);
+
+vec4 applyBgGlow(vec4 bg,float shadeAmount,float glowAmount)
+{
+    vec3 shadeRgb=mix(unshadedRgb, shadeColor.rgb, shadeColor.a * shadeAmount);
+
+    vec3 glowRgb=bgGlow.rgb*bgGlow.a*glowAmount;
+    vec3 mult=(bg.rgb+glowRgb * dimFactor)*(glowRgb+shadeRgb);
     
-    return vec4((mult+add)*dimFactor,fg.a);
+    return vec4(mult,bg.a);
 }
 
 void main()
@@ -66,7 +80,7 @@ void main()
     float shadowAmount=getShadow(uv);
     float glowAmount=getGlow(uv);
     
-    // I just dont call bgGlow because I dont want to affect our static background. its brightness should be constant.
-    gl_FragColor=mix(vec4(0,0,0,0),applyFgGlow(fg,glowAmount),fg.a);
-    
+	// I just dont call bgGlow because I dont want to affect our static background. its brightness should be constant.
+    gl_FragColor = mix(vec4(0,0,0,0), applyFgGlow(fg,glowAmount), fg.a);
+
 }

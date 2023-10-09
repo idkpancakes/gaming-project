@@ -281,7 +281,7 @@ class CaveDungeonGeneration
 		return FlxStringUtil.arrayToCSV(tileMap.getData(), width);
 	}
 
-	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, graphicPath:String)
+	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, templateSprite:FlxSprite)
 	{
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 
@@ -293,8 +293,9 @@ class CaveDungeonGeneration
 		for (i in 0...itemCount)
 		{
 			var pos = tileMap.getTileCoordsByIndex(FlxG.random.getObject(roomTiles), false);
-			var entity = new FlxSprite(pos.x, pos.y);
-			entity.loadGraphic(graphicPath, 8, 8);
+			var entity = templateSprite.clone();
+			entity.setPosition(pos.x, pos.y);
+
 			entities.add(entity);
 		}
 

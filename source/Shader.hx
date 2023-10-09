@@ -67,7 +67,7 @@ float getGlow(vec2 p)
     vec2 res=openfl_TextureSize;
     p=p-uOrigin;
     p.y*=res.y/res.x;
-    return 1.-smoothstep(uGlowRadius*.5,uGlowRadius,length(p));
+    return 1.-smoothstep(uGlowRadius*.1,uGlowRadius,length(p));
 }
 
 const vec4 fgGlow = vec4(.7412,.251,.0235,.5);
@@ -99,17 +99,15 @@ void main()
 {
     vec2 uv=openfl_TextureCoordv;
     
-    // vec4 bg=texture2D(bgImage,uv);
+    vec4 bg=texture2D(bgImage,uv);
 
 	vec4 fg=texture2D(bitmap,uv);
     float shadowAmount=getShadow(uv);
-    float glowAmount=getGlow(uv);
+    float glowAmount= getGlow(uv);
     
-	// I just dont call bgGlow because I dont want to affect our static background. its brightness should be constant.
+	// gl_FragColor = applyFgGlow(fg,glowAmount);
 
-	gl_FragColor = applyFgGlow(fg,glowAmount);
-
-    // gl_FragColor = mix(applyBgGlow(bg,shadowAmount,glowAmount), applyFgGlow(fg,glowAmount),fg.a);
+    gl_FragColor = mix(applyBgGlow(bg,shadowAmount,glowAmount), applyFgGlow(fg,glowAmount),fg.a);
 }
 	')
 	/**
@@ -121,7 +119,7 @@ void main()
 		super();
 
 		setOrigin(FlxG.width, FlxG.height);
-		glowRadius = .025;
+		glowRadius = .1;
 	}
 
 	static var point = FlxPoint.get();
