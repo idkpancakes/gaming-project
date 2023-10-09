@@ -78,7 +78,7 @@ class CaveDungeonGeneration
 		result = bitmaskRooms(result);
 
 		result = decorateLevel(result, 0.1, [FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]);
-		result = decorateLevel(result, 0.01, [FinalTiles.TORCH, FinalTiles.FIRE]);
+		// result = decorateLevel(result, 0.01, [FinalTiles.TORCH, FinalTiles.FIRE]);
 		result = decorateLevel(result, 0.01, [FinalTiles.CHEST]);
 		result = decorateLevel(result, 0.01, [FinalTiles.HEART]);
 
@@ -279,6 +279,26 @@ class CaveDungeonGeneration
 		}
 
 		return FlxStringUtil.arrayToCSV(tileMap.getData(), width);
+	}
+
+	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, graphicPath:String)
+	{
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+
+		var itemCount = Math.floor(roomTiles.length * ratio);
+
+		var entities:FlxSpriteGroup = new FlxSpriteGroup();
+
+		// technicaly could set the same one twice,
+		for (i in 0...itemCount)
+		{
+			var pos = tileMap.getTileCoordsByIndex(FlxG.random.getObject(roomTiles), false);
+			var entity = new FlxSprite(pos.x, pos.y);
+			entity.loadGraphic(graphicPath, 8, 8);
+			entities.add(entity);
+		}
+
+		return entities;
 	}
 
 	// Helper methods
