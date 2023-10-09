@@ -2,15 +2,16 @@ package;
 
 import flixel.FlxG;
 import flixel.math.FlxPoint;
+import haxe.Log;
+import openfl.display.ShaderParameter;
 
 class Shader extends flixel.system.FlxAssets.FlxShader
 {
 	public var originX(get, never):Float;
+	public var originY(get, never):Float;
 
 	inline function get_originX()
 		return this.uOrigin.value[0];
-
-	public var originY(get, never):Float;
 
 	inline function get_originY()
 		return this.uOrigin.value[1];
@@ -27,48 +28,45 @@ class Shader extends flixel.system.FlxAssets.FlxShader
 		return value;
 	}
 
-	/**
-	 * the dimness caused by the * dimfactor compunds each tile we add the filter, we need to rewrite this so that it takes several glowing points
-	 * that way we make 1 shader pass it the orgin poins and it computes everything, rather than overlaping 12 different shaders and stacking this dim effect.
-	 * 
-	 * that would also let us stop the lights from combining when they hit
-	 */
 	@:glFragmentSource('
 		#pragma header
 
-		uniform sampler2D bgImage;	
-		uniform vec2 uOrigin;
-		uniform float uScale;
-		uniform float uGlowRadius;
+	uniform sampler2D bgImage;	
+    uniform int pointCount;
+	uniform vec2 uOrigin;
+	uniform mat4 myOrigins;
+	uniform float uScale;
+	uniform float uGlowRadius;
 
 		// I added this! adjust as needed to change dim setting, will apply to both FG and BG -- ethan
 		//const float dimFactor = .8;
 
-	vec2 scalePos(vec2 p,float scale)
-{
-    vec2 origin=uOrigin;
-    return origin+(p-origin)/scale;
-}
+	vec2 scalePos(vec2 p, vec2 gPoint, float scale)
+	{
+    	vec2 origin=gPoint;
+    	return origin+(p-origin)/scale;
+	}
 
-float getShadow(vec2 p)
+float getShadow(vec2 p, vec2 gPoint)
 {
     // Not an effecient way to do this, but just scaling up the texture and put shadow if any part of it is "blocked"
     float shadowAmount=0.0;
     
     for(float scale=1.;scale<2.;scale+=.02)
     {
-        shadowAmount=max(shadowAmount,texture2D(bitmap,scalePos(p,scale)).a);
+        shadowAmount=max(shadowAmount,texture2D(bitmap,scalePos(p, gPoint, scale)).a);
     }
     return shadowAmount;
 }
 
-float getGlow(vec2 p)
+float getGlow(vec2 p, vec2 gPoint)
 {
     vec2 res=openfl_TextureSize;
-    p=p-uOrigin;
+    p=p-gPoint;
     p.y*=res.y/res.x;
-    return 1.-smoothstep(uGlowRadius*.1,uGlowRadius,length(p));
+    return 1.-smoothstep(uGlowRadius*.25,uGlowRadius,length(p));
 }
+
 
 const vec4 fgGlow = vec4(.7412,.251,.0235,.5);
 
@@ -99,18 +97,55 @@ void main()
     
     vec4 bg=texture2D(bgImage,uv);
 
+    float array[16] = float[16](myOrigins[0][0],myOrigins[1][0],myOrigins[2][0],myOrigins[3][0],myOrigins[0][1],myOrigins[1][1],myOrigins[2][1],myOrigins[3][1],myOrigins[0][2],myOrigins[1][2],myOrigins[2][2],myOrigins[3][2],myOrigins[3][3],myOrigins[1][3],myOrigins[2][3],myOrigins[3][3]);
+
 	vec4 fg=texture2D(bitmap,uv);
-    float shadowAmount=getShadow(uv);
-    float glowAmount= getGlow(uv);
-    
-	 // change 0. to shadowAmount to reintroduce shadows
-   	 gl_FragColor = mix(applyBgGlow(bg,0.,glowAmount), applyFgGlow(fg,glowAmount),fg.a);
+
+	float finalShadow = 0.;
+	float finalGlow = 0.;
+
+	for (int i=0; i < pointCount; i++) {
+		
+		vec2 glowPoint = vec2(array[i], array[i+1]);
+
+    	float glowAmount = getGlow(uv, glowPoint);
+		float shadowAmount = getShadow(uv, glowPoint);
+
+		if(glowAmount > finalGlow) {
+			finalGlow = glowAmount;
+			finalShadow = shadowAmount;
+		}
+	}
+
+	 // change 0. to finalShadow to reintroduce shadows
+   	 gl_FragColor = mix(applyBgGlow(bg,0.,finalGlow), applyFgGlow(fg,finalGlow),fg.a);
 }
 	')
-	public function new()
+	public function new(lights:Array<FlxPoint>)
 	{
 		super();
 		setOrigin(FlxG.width, FlxG.height);
+
+		if (lights.length > 8)
+			Log.trace("overMaxLightCount");
+
+		var _pointCount = new ShaderParameter<Int>();
+		this.pointCount.value = [lights.length];
+
+		var mat4:Array<Float> = [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12];
+
+		var i = 0;
+		while ((i / 2) < lights.length)
+		{
+			mat4[i] = lights[i].x / FlxG.width;
+			mat4[i + 1] = lights[i].y / FlxG.height;
+
+			i += 2;
+		}
+
+		// this is how we have to do this, which means we can take at most 8 lights
+		this.data.myOrigins = mat4;
+
 		glowRadius = .1;
 	}
 

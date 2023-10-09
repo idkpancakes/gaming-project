@@ -7,14 +7,14 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
-import openfl.display.BitmapData;
+import openfl.display.BitmapData; // update this to the actual index just for wall up down and left.
 
-// update this to the actual index just for wall up down and left.
 enum abstract TileType(Int) to Int
 {
 	var VOID = 0;
@@ -157,24 +157,27 @@ class PlayState extends FlxState
 		shaderCam.bgColor = 0x0;
 		player.camera = shaderCam;
 
-		shaders = [for (light in lightSources) new Shader()];
+		var lightPoints:Array<FlxPoint> = [for (light in lightSources) light.getPosition()];
+		// shaders = [for (light in lightSources) new Shader(lightPoints)];
+		shader = new Shader(lightPoints);
 
 		// add the bg camera as an image to the shader so we can add color effects to it
 		bgCam.buffer = new BitmapData(bgCam.width, bgCam.height);
 
-		// // shader.bgImage.input = bgCam.buffer;
+		shader.bgImage.input = bgCam.buffer;
 
-		for (shader in shaders)
-		{
-			shader.bgImage.input = bgCam.buffer;
-		}
+		// for (shader in shaders)
+		// {
+		// 	shader.bgImage.input = bgCam.buffer;
+		// }
 
-		var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
+		// var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
+
 		// shaderCam.setFilters([filters[0]]);
-		var dimFilter:openfl.filters.BitmapFilter = new openfl.filters.ShaderFilter(new DimShader());
+		// var dimFilter:openfl.filters.BitmapFilter = new openfl.filters.ShaderFilter(new DimShader());
 
-		// shaderCam.setFilters(filters.concat([dimFilter]));
-		shaderCam.setFilters(filters);
+		// shaderCam.setFilters(filters);
+		shaderCam.setFilters([new openfl.filters.ShaderFilter(shader)]);
 	}
 
 	override function update(elapsed:Float)
@@ -184,7 +187,7 @@ class PlayState extends FlxState
 		player.charMovement();
 		// FlxG.collide(player, tileMap);
 
-		lightFlicker();
+		// lightFlicker();
 	}
 
 	function lightFlicker()
