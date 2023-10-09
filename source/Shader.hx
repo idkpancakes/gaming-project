@@ -42,18 +42,18 @@ class Shader extends flixel.system.FlxAssets.FlxShader
 		uniform float uGlowRadius;
 
 		// I added this! adjust as needed to change dim setting, will apply to both FG and BG -- ethan
-		const float dimFactor = 1;
+		//const float dimFactor = .8;
 
 	vec2 scalePos(vec2 p,float scale)
 {
-    vec2 origin=uOrigin / openfl_TextureSize;
+    vec2 origin=uOrigin;
     return origin+(p-origin)/scale;
 }
 
 float getShadow(vec2 p)
 {
     // Not an effecient way to do this, but just scaling up the texture and put shadow if any part of it is "blocked"
-    float shadowAmount=0.;
+    float shadowAmount=0.0;
     
     for(float scale=1.;scale<2.;scale+=.02)
     {
@@ -78,22 +78,20 @@ vec4 applyFgGlow(vec4 fg,float glowAmount)
     vec3 mult=fg.rgb*glowRgb;
     vec3 add=fg.rgb+glowRgb;
         
-    return vec4((mult+add) * dimFactor,fg.a);
+    return vec4((mult+add),fg.a);
 }
 
-const vec3 unshadedRgb=vec3(.6,.6,1.);
-const vec4 shadeColor=vec4(0.,0.,.4,.6);
-const vec4 bgGlow=vec4(1.,.125,0.,.25);
+		const vec3 unshadedRgb = vec3(0.6, 0.6, 1.0);
+		const vec4 shadeColor = vec4(0.0, 0.0, 0.4, 0.6);
+		const vec4 bgGlow = vec4(1.0, 0.125, 0.0, 0.25);
 
 vec4 applyBgGlow(vec4 bg,float shadeAmount,float glowAmount)
 {
-    vec3 shadeRgb=mix(unshadedRgb, shadeColor.rgb, shadeColor.a * shadeAmount);
-
-    vec3 glowRgb=bgGlow.rgb*bgGlow.a*glowAmount;
-    vec3 mult=(bg.rgb+glowRgb * dimFactor)*(glowRgb+shadeRgb);
-    
-    return vec4(mult,bg.a);
-}
+	vec3 shadeRgb = mix(unshadedRgb, shadeColor.rgb, shadeColor.a * shadeAmount);
+	vec3 glowRgb = bgGlow.rgb * bgGlow.a * glowAmount;
+	vec3 mult = (bg.rgb + glowRgb) * (glowRgb + shadeRgb);
+	return vec4(mult, bg.a);
+    }
 
 void main()
 {
@@ -105,19 +103,13 @@ void main()
     float shadowAmount=getShadow(uv);
     float glowAmount= getGlow(uv);
     
-	// gl_FragColor = applyFgGlow(fg,glowAmount);
-
-    gl_FragColor = mix(applyBgGlow(bg,shadowAmount,glowAmount), applyFgGlow(fg,glowAmount),fg.a);
+	 // change 0. to shadowAmount to reintroduce shadows
+   	 gl_FragColor = mix(applyBgGlow(bg,0.,glowAmount), applyFgGlow(fg,glowAmount),fg.a);
 }
 	')
-	/**
-	 * get glow takes a given point, and gets its difference between itself and the origin, then gradually goes form the defauly color to the glow color with a glow raidus 
-	 * simulating a glow affect reaching to that point, and givin git a drop off
-	 */
 	public function new()
 	{
 		super();
-
 		setOrigin(FlxG.width, FlxG.height);
 		glowRadius = .1;
 	}

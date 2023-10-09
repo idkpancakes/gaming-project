@@ -46,11 +46,16 @@ class CaveDungeonGeneration
 	static public var width:Int = 0;
 	static public var height:Int = 0;
 
-	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?smoothingItterations:Int = 15, ?wallRatio:Float = .45)
+	static public var finalTilesetPath:String;
+
+	static public function generateDungeon(?_width:Int = 32, ?_height:Int = 32, ?smoothingItterations:Int = 15, ?wallRatio:Float = .45,
+			_finalTilesetPath:String)
 	{
 		// setup the width, height vals
 		width = _width;
 		height = _height;
+
+		finalTilesetPath = _finalTilesetPath;
 
 		tileMap = new FlxTilemap();
 		roomList = new Array();
@@ -265,7 +270,7 @@ class CaveDungeonGeneration
 	static function decorateLevel(caveCSV:String, ratio:Float, itemSet:Array<FinalTiles>):String
 	{
 		// import as tileMap
-		tileMap.loadMapFromCSV(caveCSV, AssetPaths.tile_set_expanded__png, 8, 8);
+		tileMap.loadMapFromCSV(caveCSV, finalTilesetPath, 8, 8);
 
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 

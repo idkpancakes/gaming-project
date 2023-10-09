@@ -1,7 +1,6 @@
 package;
 
 import CaveDungeonGeneration.CaveDungeonGeneration;
-import DungeonGenerator.DungeonGeneration;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -43,7 +42,6 @@ enum abstract FinalTiles(Int) to Int
 	var WALL_DOWN_RIGHT = 12;
 
 	var VOID = 100;
-
 	var TORCH = 27;
 	var FIRE = 28;
 
@@ -61,17 +59,18 @@ class PlayState extends FlxState
 	final HEIGHT:Int = 32;
 	var tileMap = new FlxTilemap();
 
-	var player = new FlxSprite();
+	var player = new Player();
 	var backGround = new FlxSprite();
 
 	var shaderCam:FlxCamera;
 	var bgBuffer:BitmapData;
 
 	var shader:Shader;
-
+	var cam:FlxCamera;
 	var shaders:Array<Shader>;
 
 	var lightSources:FlxSpriteGroup;
+	var tileSet = AssetPaths.tile_set_expanded__png;
 
 	override public function create()
 	{
@@ -83,10 +82,11 @@ class PlayState extends FlxState
 
 		tileMap = new FlxTilemap();
 
-		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT);
-		tileMap.loadMapFromCSV(caveDungeonCSV, AssetPaths.tile_set_expanded__png, 8, 8);
+		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
 
+		tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 8, 8);
 		tileMap.screenCenter();
+
 		tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
 		tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
 		tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
@@ -106,6 +106,8 @@ class PlayState extends FlxState
 		tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
 		tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
 
+		// tileMap.follow();
+
 		add(tileMap);
 
 		// build our light sources
@@ -122,6 +124,10 @@ class PlayState extends FlxState
 
 		add(lightSources);
 
+		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
+		player = new Player(startPoint.x, startPoint.y);
+
+		add(player);
 		createCams();
 	}
 
@@ -133,9 +139,12 @@ class PlayState extends FlxState
 		bgCam.bgColor = 0xffffff;
 
 		// player.camera = bgCam;
-		// lightSources.forEach(light -> light.camera = bgCam);
-		lightSources.camera = bgCam;
+		lightSources.forEach(light -> light.camera = bgCam);
+		// lightSources.camera = bgCam;
 		backGround.camera = bgCam;
+
+		// debug
+		tileMap.camera = bgCam;
 
 		FlxG.cameras.setDefaultDrawTarget(bgCam, false);
 
@@ -146,13 +155,9 @@ class PlayState extends FlxState
 		shaderCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(shaderCam);
 		shaderCam.bgColor = 0x0;
-
-		// testing -- remove to show cassandra
-		// tileMap.camera = shaderCam;
+		player.camera = shaderCam;
 
 		shaders = [for (light in lightSources) new Shader()];
-
-		// shader = new Shader();
 
 		// add the bg camera as an image to the shader so we can add color effects to it
 		bgCam.buffer = new BitmapData(bgCam.width, bgCam.height);
@@ -165,17 +170,29 @@ class PlayState extends FlxState
 		}
 
 		var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
-		shaderCam.setFilters([filters[0]]);
-		// shaderCam.setFilters(filters);
+		// shaderCam.setFilters([filters[0]]);
+		var dimFilter:openfl.filters.BitmapFilter = new openfl.filters.ShaderFilter(new DimShader());
+
+		// shaderCam.setFilters(filters.concat([dimFilter]));
+		shaderCam.setFilters(filters);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
+		player.charMovement();
+		// FlxG.collide(player, tileMap);
+
+		lightFlicker();
+	}
+
+	function lightFlicker()
+	{
 		inline function random(mean:Float)
 			return FlxG.random.floatNormal(mean, mean / 16); // higher divisor is less flicker
 
+		// shader flicker
 		for (i in 0...lightSources.length)
 		{
 			var light = lightSources.members[i];
