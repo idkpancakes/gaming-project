@@ -138,9 +138,9 @@ class PlayState extends FlxState
 		var bgCam = FlxG.camera;
 		bgCam.bgColor = 0xffffff;
 
-		// player.camera = bgCam;
+		///setting the camera of each produces the desired effect , while setting the camera for the entire group causes a orange ssquare to show up? starang
 		lightSources.forEach(light -> light.camera = bgCam);
-		// lightSources.camera = bgCam;
+
 		backGround.camera = bgCam;
 
 		// debug
@@ -157,27 +157,19 @@ class PlayState extends FlxState
 		shaderCam.bgColor = 0x0;
 		player.camera = shaderCam;
 
-		var lightPoints:Array<FlxPoint> = [for (light in lightSources) light.getPosition()];
-		// shaders = [for (light in lightSources) new Shader(lightPoints)];
-		shader = new Shader(lightPoints);
+		shaders = [for (light in lightSources) new Shader()];
 
 		// add the bg camera as an image to the shader so we can add color effects to it
 		bgCam.buffer = new BitmapData(bgCam.width, bgCam.height);
 
-		shader.bgImage.input = bgCam.buffer;
+		for (shader in shaders)
+		{
+			shader.bgImage.input = bgCam.buffer;
+		}
 
-		// for (shader in shaders)
-		// {
-		// 	shader.bgImage.input = bgCam.buffer;
-		// }
+		var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
 
-		// var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
-
-		// shaderCam.setFilters([filters[0]]);
-		// var dimFilter:openfl.filters.BitmapFilter = new openfl.filters.ShaderFilter(new DimShader());
-
-		// shaderCam.setFilters(filters);
-		shaderCam.setFilters([new openfl.filters.ShaderFilter(shader)]);
+		shaderCam.setFilters(filters);
 	}
 
 	override function update(elapsed:Float)
@@ -187,7 +179,7 @@ class PlayState extends FlxState
 		player.charMovement();
 		// FlxG.collide(player, tileMap);
 
-		// lightFlicker();
+		lightFlicker();
 	}
 
 	function lightFlicker()
