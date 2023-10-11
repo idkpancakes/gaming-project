@@ -16,19 +16,19 @@ enum abstract TileTypes(Int) to Int
 
 class Enemy extends FlxSprite
 {
-	var inCombat:Bool;
-	var range:Int = 100;
+	var inCombat:Bool = false;
+	var range:Int = 200;
 
 	var onSight:FlxTween;
 
-	public function inRange(player:Player, enemy:Enemy)
+	public function inRange(player:Player, enemy:FlxSprite)
 	{
 		var distanceX:Float = player.x - enemy.x;
 		var distanceY:Float = player.y - enemy.y;
 
 		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-		if (total <= enemy.range)
+		if (total <= 200)
 		{
 			inCombat = true;
 			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
@@ -40,10 +40,17 @@ class Enemy extends FlxSprite
 		}
 	}
 
-	public function placeEnemy(tileMap:FlxTilemap)
+	public function projectilesInRange(player:Player, enemy:FlxSprite)
 	{
-		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)));
-		this.x = startPoint.x;
-		this.y = startPoint.y;
+		var distanceX:Float = player.x - enemy.x;
+		var distanceY:Float = player.y - enemy.y;
+
+		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+		if (total <= 200)
+		{
+			inCombat = true;
+			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
+		}
 	}
 }
