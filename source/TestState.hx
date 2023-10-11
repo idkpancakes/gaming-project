@@ -138,17 +138,15 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new Boss(startPoint.x + 500, startPoint.y, MINI);
+		plantMan = new Boss(startPoint.x + 300, startPoint.y, MINI);
 		add(plantMan);
-
-		plantMan.solid = false;
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
 
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 		add(wep);
 
-		add(plantMan.getThorn());
+		add(plantMan.getThorns());
 
 		super.create();
 	}
@@ -167,6 +165,13 @@ class TestState extends FlxState
 		}
 
 		plantMan.attack(player, plantMan);
+
+		FlxG.overlap(player, plantMan, switching);
+	}
+
+	public function switching(player:Player, enemy:Enemy)
+	{
+		FlxG.switchState(new CombatState());
 	}
 }
 /**

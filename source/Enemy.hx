@@ -35,22 +35,8 @@ class Enemy extends FlxSprite
 
 			if (FlxG.collide(player, enemy))
 			{
-				var text = new flixel.text.FlxText(250, 250, FlxG.width, "Letsgo?", 64);
+				FlxG.switchState(new CombatState());
 			}
-		}
-	}
-
-	public function projectilesInRange(player:Player, enemy:FlxSprite)
-	{
-		var distanceX:Float = player.x - enemy.x;
-		var distanceY:Float = player.y - enemy.y;
-
-		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-		if (total <= 200)
-		{
-			inCombat = true;
-			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
 		}
 	}
 }

@@ -20,6 +20,7 @@ class CombatState extends FlxState
 		super.create();
 
 		text = new flixel.text.FlxText(250, 250, FlxG.width, "Letsgo?", 64);
+		add(text);
 	}
 
 	override public function update(elapsed:Float)

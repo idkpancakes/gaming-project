@@ -18,19 +18,12 @@ class MenuState extends FlxState
 	{
 		super.create();
 
-		storyText = new FlxText(0, 0, FlxG.width - 40);
-		storyText.text = "There once was a bee! and it did things and stuff and stuff and things and things.";
-		storyText.screenCenter();
-
-		add(storyText);
-
 		playButton = new FlxButton(250, 250, "Play", clickPlay);
 		add(playButton);
 	}
 
 	override public function update(elapsed:Float)
 	{
-		storyText.y--;
 		super.update(elapsed);
 	}
 

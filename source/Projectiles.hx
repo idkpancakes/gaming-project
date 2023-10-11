@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import haxe.Timer;
 
 enum ArrowType
 {
@@ -22,13 +23,5 @@ class Projectiles extends Enemy
 		loadGraphic(graphic);
 
 		scale.set(2, 2);
-
-		visible = false;
-	}
-
-	public function attack(player:Player, enemy:Enemy)
-	{
-		visible = true;
-		inRange(player, enemy);
 	}
 }
