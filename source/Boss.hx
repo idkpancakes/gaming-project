@@ -21,14 +21,24 @@ class Boss extends Enemy
 	var thornMax:Int = 10;
 	var thornCount:Int = 0;
 
-	var thorns:FlxTypedGroup<Projectiles>;
+	public var thorns:FlxTypedGroup<Projectiles>;
 
 	public function new(x:Float, y:Float, type:BossType)
 	{
 		super(x, y);
 		bType = type;
-		var graphic = if (bType == MINI) AssetPaths.CarnivorousPlantIdle__png else AssetPaths.QueenBeeTexture__png;
-		loadGraphic(graphic);
+
+		switch (bType)
+		{
+			case MINI:
+				loadGraphic(AssetPaths.CarnivorousPlantIdle__png);
+
+			case FINAL:
+				loadGraphic(AssetPaths.QueenBeeTexture__png, true, 185, 160);
+				animation.add("idle", [0, 1, 2, 3], 5, true);
+
+				animation.play("idle");
+		}
 
 		scale.set(0.5, 0.5);
 		updateHitbox();
@@ -50,6 +60,7 @@ class Boss extends Enemy
 			var rand = FlxG.random.int(0, Math.floor(this.height));
 			var thorn = new Projectiles(x, y + rand, THORN);
 			thorns.add(thorn);
+			// thorn.solid = true;
 			thorn.velocity.x = -200;
 			thornCount++;
 

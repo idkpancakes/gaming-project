@@ -42,7 +42,7 @@ class OverheadUI extends FlxSpriteGroup
 	public function updateHUD()
 	{
 		remove(weaponLogo);
-		healthCounter.text = health + " / 3";
+		healthCounter.text = Player.getDungeonHealth() + " / 3";
 		weaponLogo.loadGraphic(weapon.graphicPath);
 
 		add(weaponLogo);
@@ -54,8 +54,9 @@ class OverheadUI extends FlxSpriteGroup
 		updateHUD();
 	}
 
-	public function healthSet(health:Int)
+	public function healthSet()
 	{
+		var health = Player.getDungeonHealth();
 		healthCounter.text = health + " /3";
 		updateHUD();
 	}

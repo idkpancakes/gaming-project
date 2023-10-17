@@ -7,6 +7,8 @@ class Player extends FlxSprite
 {
 	var weapon:Weapons;
 
+	public static var dungeonHealth = 3;
+
 	// static inline var SPEED:Float = 100;
 	public function new(x:Float = 0, y:Float = 0)
 	{
@@ -94,5 +96,15 @@ class Player extends FlxSprite
 			sprite.facing = RIGHT;
 		else
 			sprite.facing = LEFT;
+	}
+
+	public static function getDungeonHealth():Int
+	{
+		return dungeonHealth;
+	}
+
+	public static function setDungenHealth(newHealth:Int)
+	{
+		dungeonHealth = newHealth;
 	}
 }

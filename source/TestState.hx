@@ -90,8 +90,6 @@ class TestState extends FlxState
 
 	static public var thorns:Enemy;
 
-	var health:Int = 3;
-
 	override public function create()
 	{
 		var backGround = new FlxSprite();
@@ -138,7 +136,7 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new Boss(startPoint.x + 300, startPoint.y, MINI);
+		plantMan = new Boss(startPoint.x + 300, startPoint.y, FINAL);
 		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
@@ -155,6 +153,8 @@ class TestState extends FlxState
 	{
 		super.update(elapsed);
 
+		hud.updateHUD();
+
 		player.charMovement(player);
 		FlxG.collide(player, tileMap);
 		FlxG.collide(batGroup, tileMap);
@@ -167,6 +167,15 @@ class TestState extends FlxState
 		plantMan.attack(player, plantMan);
 
 		FlxG.overlap(player, plantMan, switching);
+
+		for (thorn in plantMan.getThorns())
+		{
+			if (FlxG.overlap(player, thorn))
+			{
+				Player.setDungenHealth(Player.getDungeonHealth() - 1);
+				thorn.kill();
+			}
+		}
 	}
 
 	public function switching(player:Player, enemy:Enemy)
