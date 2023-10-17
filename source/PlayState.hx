@@ -1,6 +1,7 @@
 package;
 
 import CaveDungeonGeneration.CaveDungeonGeneration;
+import LightSourceShader.LightSourceShader;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -13,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
-import openfl.display.BitmapData; // update this to the actual index just for wall up down and left.
+import openfl.display.BitmapData; // update this to the actual index just for wall up down and left
 
 enum abstract TileType(Int) to Int
 {
@@ -24,9 +25,6 @@ enum abstract TileType(Int) to Int
 	var DOOR = 4;
 }
 
-/**
- * assumign we're just straight using the tileset from the download pack
- */
 enum abstract FinalTiles(Int) to Int
 {
 	var ROOM = 9;
@@ -38,13 +36,14 @@ enum abstract FinalTiles(Int) to Int
 
 	var WALL_UP_LEFT = 3;
 	var WALL_UP_RIGHT = 4;
+
 	var WALL_DOWN_LEFT = 11;
 	var WALL_DOWN_RIGHT = 12;
 
-	var VOID = 100;
+	var VOID = 103;
+
 	var TORCH = 27;
 	var FIRE = 28;
-
 	var CHEST = 40;
 	var HEART = 45;
 
@@ -65,9 +64,9 @@ class PlayState extends FlxState
 	var shaderCam:FlxCamera;
 	var bgBuffer:BitmapData;
 
-	var shader:Shader;
+	var shader:LightSourceShader;
 	var cam:FlxCamera;
-	var shaders:Array<Shader>;
+	var shaders:Array<LightSourceShader>;
 
 	var lightSources:FlxSpriteGroup;
 	var tileSet = AssetPaths.tile_set_expanded__png;
@@ -77,14 +76,18 @@ class PlayState extends FlxState
 		super.create();
 
 		backGround = new FlxSprite();
-		backGround.loadGraphic(AssetPaths.bg_resized__png);
+		backGround.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT);
+		// backGround.loadGraphic(AssetPaths.bg_resized__png);
 		add(backGround);
 
 		tileMap = new FlxTilemap();
 
 		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
 
+		Log.trace(caveDungeonCSV);
+
 		tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 8, 8);
+
 		tileMap.screenCenter();
 
 		tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
@@ -133,31 +136,30 @@ class PlayState extends FlxState
 
 	function createCams()
 	{
-		// FlxG.camera draws the actual world. In this case, that means the background and the gem
+		// FlxG.camera draws the actual world. In this case, that means the background and the lighsource
 		// Note, the shader also draws this cam, so in the end this camera is completely covered by shaderCam
 		var bgCam = FlxG.camera;
 		bgCam.bgColor = 0xffffff;
 
 		///setting the camera of each produces the desired effect , while setting the camera for the entire group causes a orange ssquare to show up? starang
-		lightSources.forEach(light -> light.camera = bgCam);
 
 		backGround.camera = bgCam;
 
 		// debug
-		tileMap.camera = bgCam;
 
 		FlxG.cameras.setDefaultDrawTarget(bgCam, false);
 
-		/* shaderCam draws the foreground elements (except the gem), then passes that as input to
+		/* shaderCam draws the foreground elements (except the lighsource), then passes that as input to
 		 * the shader along with the bg camera, the fg is used to cast shadows on the bg
 		 * In this case that means everything except the gem, ui and background
 		 */
 		shaderCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(shaderCam);
 		shaderCam.bgColor = 0x0;
-		player.camera = shaderCam;
+		player.camera = bgCam;
+		lightSources.forEach(light -> light.camera = shaderCam);
 
-		shaders = [for (light in lightSources) new Shader()];
+		shaders = [for (light in lightSources) new LightSourceShader()];
 
 		// add the bg camera as an image to the shader so we can add color effects to it
 		bgCam.buffer = new BitmapData(bgCam.width, bgCam.height);
@@ -169,7 +171,10 @@ class PlayState extends FlxState
 
 		var filters:Array<openfl.filters.BitmapFilter> = [for (shader in shaders) new openfl.filters.ShaderFilter(shader)];
 
-		shaderCam.setFilters(filters);
+		var dimShader:Array<openfl.filters.BitmapFilter> = [new openfl.filters.ShaderFilter(new Shader())];
+
+		shaderCam.setFilters(filters.concat(dimShader));
+		// shaderCam.setFilters(dimShader.concat(filters));
 	}
 
 	override function update(elapsed:Float)
@@ -185,7 +190,7 @@ class PlayState extends FlxState
 	function lightFlicker()
 	{
 		inline function random(mean:Float)
-			return FlxG.random.floatNormal(mean, mean / 16); // higher divisor is less flicker
+			return FlxG.random.floatNormal(mean, mean / 8); // higher divisor is less flicker
 
 		// shader flicker
 		for (i in 0...lightSources.length)
@@ -218,15 +223,16 @@ class PlayState extends FlxState
 		return buffer;
 	}
 }
-/**
+/** 	
  * it's dangerous to go alone! take this!
  * 
+ *  (Sir) Reginald 
  *	       .
  *	      ":"
  *	    ___:____     |"\/"|
  *	  ,'        `.    \  /
  * 	 |  O         \___/  |
- * 	~^~^~^~^~^~^~^~^~^~^~^~^~
+ * 	~^~^~^~^~^~^~^~^~^~^~^~^~ -- 10/10
  * 
  * todo list
  * 
@@ -243,7 +249,6 @@ class PlayState extends FlxState
  * - item placement
  * 
  *
- */
-/**
+ */ /**
  * *
  */

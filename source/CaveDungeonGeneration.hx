@@ -82,10 +82,10 @@ class CaveDungeonGeneration
 		result = connectRooms(result);
 		result = bitmaskRooms(result);
 
-		result = decorateLevel(result, 0.1, [FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]);
+		// result = decorateLevel(result, 0.1, [FinalTiles.FLOOR_0, FinalTiles.FLOOR_1, FinalTiles.FLOOR_2]);
 		// result = decorateLevel(result, 0.01, [FinalTiles.TORCH, FinalTiles.FIRE]);
-		result = decorateLevel(result, 0.01, [FinalTiles.CHEST]);
-		result = decorateLevel(result, 0.01, [FinalTiles.HEART]);
+		// result = decorateLevel(result, 0.01, [FinalTiles.CHEST]);
+		// result = decorateLevel(result, 0.01, [FinalTiles.HEART]);
 
 		return result;
 	}
@@ -197,16 +197,9 @@ class CaveDungeonGeneration
 
 	static function bitmaskRooms(caveCSV:String)
 	{
-		/**
-		 * I need to add a border padding to the grid to prevent rooms without border walls ! 
-		 * 
-		 *  how the hell do I do that,
-		 * 
-		 * or I could just set the rows 
-		 */
-
 		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
 
+		// padding
 		for (i in 0...width)
 		{
 			var bottomOffset = width * (height - 1); // ?
@@ -225,7 +218,6 @@ class CaveDungeonGeneration
 		}
 
 		var data = tileMap.getData();
-
 		var wallTiles = tileMap.getTileInstances(TileType.WALL);
 		var bitmaskData:Array<Bitmask> = new Array();
 
@@ -270,7 +262,7 @@ class CaveDungeonGeneration
 	static function decorateLevel(caveCSV:String, ratio:Float, itemSet:Array<FinalTiles>):String
 	{
 		// import as tileMap
-		tileMap.loadMapFromCSV(caveCSV, finalTilesetPath, 8, 8);
+		tileMap.loadMapFromCSV(caveCSV, finalTilesetPath, 16, 16);
 
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 
@@ -407,7 +399,7 @@ class CaveDungeonGeneration
 	 */
 	static function flatTo2DIndex(flatIndex:Int):FlxPoint
 	{
-		return FlxPoint.get(flatIndex % width, Math.floor(flatIndex / width));
+		return FlxPoint.get(flatIndex % width, Math.floor(flatIndex % height));
 	}
 
 	static function _2DToFlatIndex(pointIndex:FlxPoint):Int
