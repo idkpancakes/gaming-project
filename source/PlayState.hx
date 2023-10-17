@@ -32,6 +32,7 @@ enum Outcome
 enum Choice // this is where you make differt moves, ie punch, mage hit idk
 {
 	FIGHT; // this will have to be changed there is no option other then to fight
+	MAGIC;
 }
 
 class CombatHUD extends FlxTypedGroup<FlxSprite>
@@ -118,10 +119,16 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		// create our choices and add them to the group.  // here is where we add each option of attack
 		choices = new Map();
 		choices[FIGHT] = new FlxText(background.x + 30, background.y + 48, 85, "FIGHT", 22);
+		choices[MAGIC] = new FlxText(background.x + 25, background.y + 48, 85, "MAGIC", 22);
 
 		add(choices[FIGHT]);
 
 		pointer = new FlxSprite(background.x + 10, choices[FIGHT].y + (choices[FIGHT].height / 2) - 8, AssetPaths.pointer__png);
+		pointer.visible = false;
+		add(pointer);
+
+		add(choices[MAGIC]);
+		pointer = new FlxSprite(background.x + 10, choices[MAGIC].y + (choices[MAGIC].height / 2) - 8, AssetPaths.pointer__png);
 		pointer.visible = false;
 		add(pointer);
 
@@ -156,7 +163,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		// mark this object as not active and not visible so update and draw don't get called on it until we're ready to show it.
 		active = false;
 		visible = false;
-
+		// sounds will be either changed or removed,
 		fledSound = FlxG.sound.load(AssetPaths.fled__wav);
 		hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
 		loseSound = FlxG.sound.load(AssetPaths.lose__wav);
@@ -289,10 +296,10 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			selectSound.play();
 			makeChoice(); // when the playerSprite chooses either option, we call this function to process their selection
 		}
-		else if (up || down)
+		if (up || down)
 		{
 			// if the playerSprite presses up or down, we move the cursor up or down (with wrapping)
-			selected = if (selected == FIGHT) FLEE else FIGHT;
+			selected = if (selected == FIGHT) MAGIC else FIGHT;
 			selectSound.play();
 			movePointer();
 		}
@@ -376,6 +383,47 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				// setup 2 tweens to allow the damage indicators to fade in and float up from the sprites
 				FlxTween.num(damages[0].y, damages[0].y - 12, 1, {ease: FlxEase.circOut}, updateDamageY);
 				FlxTween.num(0, 1, .2, {ease: FlxEase.circInOut, onComplete: doneDamageIn}, updateDamageAlpha);
+
+			case MAGIC:
+				// if MAGIC was picked...
+				// ...the playerSprite attacks the enemySprite first
+				// they have an 85% chance to hit the enemySprite
+				if (FlxG.random.bool(85))
+				{
+					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
+					damages[1].text = "1";
+					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
+						onComplete: function(_)
+						{
+							FlxTween.tween(enemySprite, {x: enemySprite.x - 4}, 0.1);
+						}
+					});
+					hurtSound.play();
+					enemyHealth--;
+					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
+				}
+				else
+				{
+					// change our damage text to show that we missed!
+					damages[1].text = "MISS!";
+					missSound.play();
+				}
+
+				// position the damage text over the enemySprite, and set it's alpha to 0 but it's visible to true (so that it gets draw called on it)
+				damages[1].x = enemySprite.x + 2 - (damages[1].width / 2);
+				damages[1].y = enemySprite.y + 4 - (damages[1].height / 2);
+				damages[1].alpha = 0;
+				damages[1].visible = true;
+
+				// if the enemySprite is still alive, it will swing back!
+				if (enemyHealth > 0)
+				{
+					enemyAttack();
+				}
+
+				// setup 2 tweens to allow the damage indicators to fade in and float up from the sprites
+				FlxTween.num(damages[0].y, damages[0].y - 12, 1, {ease: FlxEase.circOut}, updateDamageY);
+				FlxTween.num(0, 1, .2, {ease: FlxEase.circInOut, onComplete: doneDamageIn}, updateDamageAlpha);
 		}
 
 		// regardless of what happens, we need to set our 'wait' flag so that we can show what happened before moving on
@@ -387,7 +435,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	 */
 	function enemyAttack()
 	{
-		// first, lets see if the enemySprite hits or not. We'll give him a 30% chance to hit
+		// first, lets see if the enemySprite hits or not. We'll give him a 70% chance to hit
 		if (FlxG.random.bool(70))
 		{
 			// if we hit, flash the screen white, and deal one damage to the playerSprite - then update the playerSprite's health
@@ -482,3 +530,4 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			pointer.visible = true;
 		}
 	}
+}
