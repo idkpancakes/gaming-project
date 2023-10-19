@@ -180,7 +180,8 @@ class TestState extends FlxState
 		// {
 		// 	if (FlxG.overlap(player, thorn))
 		// 	{
-		// 		Player.setDungeonHealth(Player.getDungeonHealth() - 1);
+		// 		player.setDungeonHealth(player.getDungeonHealth() - 1);
+		//		hud.health = player.getDungeonHealth();
 		// 		thorn.kill();
 		// 	}
 		// }

@@ -8,6 +8,7 @@ enum WeaponType
 {
 	GUN;
 	CHAINSAW;
+	BOW;
 	EMPTY;
 }
 
@@ -23,7 +24,17 @@ class Weapons extends FlxSprite
 	{
 		super(x, y);
 		this.type = type;
-		graphicPath = if (type == GUN) AssetPaths.MachineGuns__png else if (type == CHAINSAW) AssetPaths.chainsaw__png else null;
-		loadGraphic(graphicPath);
+
+		switch (type)
+		{
+			case GUN:
+				loadGraphic(AssetPaths.MachineGuns__png);
+			case CHAINSAW:
+				loadGraphic(AssetPaths.chainsaw__png);
+			case BOW:
+				loadGraphic(AssetPaths.bowAndArrow__png);
+			case EMPTY:
+				null;
+		}
 	}
 }
