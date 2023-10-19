@@ -1,5 +1,5 @@
-import PlayState.FinalTiles;
-import PlayState.TileType;
+import TestState.FinalTiles;
+import TestState.TileType;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
