@@ -20,6 +20,7 @@ enum DEnemy
 	FINAL;
 	BEE;
 	BAT;
+	PLANT;
 }
 
 class Enemy extends FlxSprite
@@ -62,13 +63,27 @@ class Enemy extends FlxSprite
 				animation.add("idle", [0, 1, 2, 3, 4], 4, true);
 				animation.play("idle");
 				animation.add("flaping", [0, 1, 2, 3], 4, true);
+
+			case PLANT:
+				loadGraphic(AssetPaths.plantMove__png, true, 104, 107);
+				solid = true;
+				//	animation.add("idleGround", [3], 4, true);
+				animation.add("gettingUp", [3, 4, 5, 6], 1, false);
+				animation.add("move", [0, 1, 2], 1, true);
+
+				animation.finishCallback = function(name:String)
+				{
+					if (name != "gettingUp")
+						return;
+					animation.play("move");
+				}
 		}
 
 		scale.set(0.5, 0.5);
 		updateHitbox();
 	}
 
-	public function inRange(player:Player, enemy:Enemy)
+	public function inRange(player:Player, enemy:FlxSprite):Bool
 	{
 		var distanceX:Float = player.x - enemy.x;
 		var distanceY:Float = player.y - enemy.y;
@@ -77,13 +92,16 @@ class Enemy extends FlxSprite
 
 		if (total <= 250)
 		{
-			this.inCombat = true;
-			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
-
-			if (FlxG.collide(player, enemy))
-			{
-				FlxG.switchState(new CombatState(player, enemy));
-			}
+			return true;
 		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public function cancelTween()
+	{
+		onSight.cancel();
 	}
 }
