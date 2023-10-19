@@ -137,7 +137,7 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new Bat(startPoint.x + 300, startPoint.y, BEE);
+		plantMan = new Bat(startPoint.x + 300, startPoint.y, PLANT);
 		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);

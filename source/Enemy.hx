@@ -39,4 +39,9 @@ class Enemy extends FlxSprite
 			}
 		}
 	}
+
+	public function cancelTween()
+	{
+		onSight.cancel();
+	}
 }

@@ -10,6 +10,7 @@ enum DEnemy
 {
 	BEE;
 	BAT;
+	PLANT;
 }
 
 class Bat extends Enemy
@@ -39,15 +40,26 @@ class Bat extends Enemy
 				animation.add("idle", [0, 1, 2, 3, 4], 4, true);
 				animation.play("idle");
 				animation.add("flaping", [0, 1, 2, 3], 4, true);
+
+			case PLANT:
+				loadGraphic(AssetPaths.plantManTexture__png, true, 104, 107);
+				solid = true;
+				animation.add("idle", [0], 4, true);
+				animation.add("gettingUp", [0, 2, 3, 1], 4, true);
 		}
 	}
 
 	public function attack(player:Player, enemy:Bat)
 	{
 		inRange(player, enemy);
-		if (this.inCombat)
+		if (this.inCombat && enType == BEE || enType == BAT)
 		{
 			animation.play("flapping");
+		}
+		else if (this.inCombat && enType == PLANT)
+		{
+			enemy.cancelTween();
+			animation.play("gettingUp");
 		}
 	}
 }

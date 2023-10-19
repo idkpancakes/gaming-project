@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "00_onGround.png",
+	"frame": {"x":0,"y":0,"w":104,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":104,"h":107},
+	"sourceSize": {"w":104,"h":107}
+},
+{
+	"filename": "01-gettingUp.png",
+	"frame": {"x":104,"y":0,"w":104,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":104,"h":107},
+	"sourceSize": {"w":104,"h":107}
+},
+{
+	"filename": "02_gettingUp.png",
+	"frame": {"x":208,"y":0,"w":104,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":104,"h":107},
+	"sourceSize": {"w":104,"h":107}
+},
+{
+	"filename": "03_gettingUp.png",
+	"frame": {"x":312,"y":0,"w":104,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":104,"h":107},
+	"sourceSize": {"w":104,"h":107}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "plantManTexture.png",
+	"format": "RGBA8888",
+	"size": {"w":416,"h":107},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:dd76bb8f10ee3b73a630037f3ecde265:772e2b3882945e640e02423dc154b4a2:08621715945ed73979e061588a6f2c95$"
+}
+}
