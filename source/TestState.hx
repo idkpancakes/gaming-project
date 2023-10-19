@@ -8,6 +8,7 @@ import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
+import haxe.ds.BalancedTree;
 
 enum abstract TileType(Int) to Int
 {
@@ -86,7 +87,7 @@ class TestState extends FlxState
 
 	public var hud:OverheadUI;
 
-	var plantMan:Boss;
+	var plantMan:Bat;
 
 	static public var thorns:Enemy;
 
@@ -136,7 +137,7 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new Boss(startPoint.x + 300, startPoint.y, FINAL);
+		plantMan = new Bat(startPoint.x + 300, startPoint.y, BEE);
 		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
@@ -144,7 +145,7 @@ class TestState extends FlxState
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 		add(wep);
 
-		add(plantMan.getThorns());
+		//	add(plantMan.getThorns());
 
 		super.create();
 	}
@@ -170,14 +171,14 @@ class TestState extends FlxState
 
 		FlxG.overlap(player, plantMan, switching);
 
-		for (thorn in plantMan.getThorns())
-		{
-			if (FlxG.overlap(player, thorn))
-			{
-				Player.setDungeonHealth(Player.getDungeonHealth() - 1);
-				thorn.kill();
-			}
-		}
+		// for (thorn in plantMan.getThorns())
+		// {
+		// 	if (FlxG.overlap(player, thorn))
+		// 	{
+		// 		Player.setDungeonHealth(Player.getDungeonHealth() - 1);
+		// 		thorn.kill();
+		// 	}
+		// }
 	}
 
 	public function switching(player:Player, enemy:Enemy)
