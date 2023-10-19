@@ -73,6 +73,9 @@ enum abstract FinalTiles(Int) to Int
 
 class TestState extends FlxState
 {
+	final WIDTH:Int = 32;
+	final HEIGHT:Int = 32;
+
 	var player:Player;
 
 	var bat1:Bat;
@@ -87,7 +90,7 @@ class TestState extends FlxState
 	public var hud:OverheadUI;
 
 	var plantMan:Bat;
-	var tileSet = AssetPaths.tile_set_expanded__png;
+	var tileSet = AssetPaths.biggerBoy__png;
 
 	static public var thorns:Enemy;
 
@@ -98,10 +101,8 @@ class TestState extends FlxState
 		add(backGround);
 
 		tileMap = new FlxTilemap();
-	var tileSet = AssetPaths.tile_set_expanded__png;
-
-		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(32, 32);
-		// tileMap.loadMapFromCSV(AssetPaths.emptyMap__csv, AssetPaths.biggerBoy__png, 48, 48);
+		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
+		tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 48, 48);
 
 		tileMap.screenCenter();
 
