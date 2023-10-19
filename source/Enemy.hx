@@ -28,9 +28,9 @@ class Enemy extends FlxSprite
 
 		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-		if (total <= 200)
+		if (total <= 250)
 		{
-			inCombat = true;
+			this.inCombat = true;
 			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
 
 			if (FlxG.collide(player, enemy))

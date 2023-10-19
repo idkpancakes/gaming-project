@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -17,6 +18,7 @@ import flixel.util.FlxColor;
 
 class PauseMenu extends FlxSubState
 {
+	// FIX CAMERA
 	var title:FlxText;
 	var volumeText:FlxText;
 	var resolutionText:FlxText;
@@ -39,7 +41,11 @@ class PauseMenu extends FlxSubState
 	var rightButton:FlxButtonPlus;
 	var resolutionOptionDisplay:FlxText;
 
+	var center:FlxSprite;
+
 	var volume:Int = 0;
+
+	var menuCam:FlxCamera;
 
 	public function new()
 	{
@@ -59,7 +65,7 @@ class PauseMenu extends FlxSubState
 		volumeText = new FlxText(50, 150, "Volume:");
 		volumeText.setFormat(null, 20, FlxColor.RED);
 
-		volumeSlider = new FlxSlider(FlxG.sound, "volume", 200, 150, 0, 100, 300, 50, 10, FlxColor.RED, FlxColor.PURPLE);
+		volumeSlider = new FlxSlider(this, "volume", 200, 150, 0, 100, 300, 50, 10, FlxColor.RED, FlxColor.PURPLE);
 		volumeSlider.nameLabel.visible = false;
 		volumeSlider.y -= (volumeSlider.handle.height / 2);
 		volumeSlider.hoverAlpha = 1;
@@ -99,6 +105,14 @@ class PauseMenu extends FlxSubState
 
 		back = new FlxButton(10, 400, "Back", closeSub);
 		add(back);
+
+		center = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
+		center.makeGraphic(1, 1, FlxColor.TRANSPARENT);
+		center.alpha = 0;
+
+		menuCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		FlxG.cameras.add(menuCam);
+		menuCam.target = center;
 
 		super.create();
 	}
