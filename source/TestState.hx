@@ -98,8 +98,8 @@ class TestState extends FlxState
 
 		tileMap = new FlxTilemap();
 
-		// var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(32, 32);
-		tileMap.loadMapFromCSV(AssetPaths.emptyMap__csv, AssetPaths.biggerBoy__png, 48, 48);
+		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(32, 32);
+		// tileMap.loadMapFromCSV(AssetPaths.emptyMap__csv, AssetPaths.biggerBoy__png, 48, 48);
 
 		tileMap.screenCenter();
 
