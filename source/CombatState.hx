@@ -12,7 +12,7 @@ class CombatState extends FlxState
 	var player:Player;
 	var enemy:Enemy;
 
-	var bat:Bat;
+	var bat:DungeonEnemy;
 
 	var text:FlxText;
 	var combatHUD:CombatHUD;
