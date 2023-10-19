@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.animation.FlxAnimation;
+import flixel.animation.FlxAnimationController;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import haxe.Log;
@@ -13,7 +15,7 @@ enum DEnemy
 	PLANT;
 }
 
-class Bat extends Enemy
+class DungeonEnemy extends Enemy
 {
 	var enType:DEnemy;
 
@@ -44,22 +46,40 @@ class Bat extends Enemy
 			case PLANT:
 				loadGraphic(AssetPaths.plantManTexture__png, true, 104, 107);
 				solid = true;
-				animation.add("idle", [0], 4, true);
-				animation.add("gettingUp", [0, 2, 3, 1], 4, true);
+				//	animation.add("idleGround", [3], 4, true);
+				animation.add("gettingUp", [3, 4, 5, 6], 1, false);
+				animation.add("move", [0, 1, 2], 1, true);
+
+				animation.finishCallback = function(name:String)
+				{
+					if (name != "gettingUp")
+						return;
+					animation.play("move");
+				}
 		}
 	}
 
-	public function attack(player:Player, enemy:Bat)
+	public function attack(player:Player, enemy:DungeonEnemy)
 	{
-		inRange(player, enemy);
-		if (this.inCombat && enType == BEE || enType == BAT)
+		if (inRange(player, enemy) && enType == BEE || enType == BAT)
 		{
+			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
+
+			if (FlxG.collide(player, enemy))
+			{
+				FlxG.switchState(new CombatState());
+			}
 			animation.play("flapping");
 		}
-		else if (this.inCombat && enType == PLANT)
+		else if (inRange(player, enemy) && enType == PLANT)
 		{
-			enemy.cancelTween();
 			animation.play("gettingUp");
+			onSight = FlxTween.tween(enemy, {x: player.getPosition().x, y: player.getPosition().y}, 2);
+
+			if (FlxG.collide(player, enemy))
+			{
+				FlxG.switchState(new CombatState());
+			}
 		}
 	}
 }

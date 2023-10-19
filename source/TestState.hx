@@ -75,22 +75,22 @@ class TestState extends FlxState
 {
 	var player:Player;
 
-	var bat1:Bat;
+	var bat1:DungeonEnemy;
 	var wep:Weapons;
 
 	var cam:FlxCamera;
 	var hudCam:FlxCamera;
 
 	var tileMap:FlxTilemap;
-	var batGroup:FlxTypedGroup<Bat>;
+	var batGroup:FlxTypedGroup<DungeonEnemy>;
 
 	public var hud:OverheadUI;
 
-	var plantMan:Bat;
+	var plantMan:DungeonEnemy;
 
 	static public var thorns:Enemy;
 
-	public var hud:OverheadUI;
+	// public var hud:OverheadUI;
 
 	override public function create()
 	{
@@ -138,7 +138,7 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new Bat(startPoint.x + 300, startPoint.y, PLANT);
+		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, PLANT);
 		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
