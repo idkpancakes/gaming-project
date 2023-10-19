@@ -149,11 +149,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(results);
 
 		// like we did in our HUD class, we need to set the scrollFactor on each of our children objects to 0,0. We also set alpha to 0 (so we can fade this in)
-		forEach(function(sprite:FlxSprite)
-		{
-			sprite.scrollFactor.set();
-			sprite.alpha = 0;
-		});
+		// forEach(function(sprite:FlxSprite)
+		// {
+		// 	sprite.scrollFactor.set();
+		// 	sprite.alpha = 0;
+		// });
 
 		// mark this object as not active and not visible so update and draw don't get called on it until we're ready to show it.
 		active = false;
