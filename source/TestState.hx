@@ -166,10 +166,12 @@ class TestState extends FlxState
 			hud.setWeapon(wep);
 		}
 
-		//
-		plantMan.attack(player, plantMan);
-
-		FlxG.overlap(player, plantMan, switching);
+		// -10 points
+		for (dude in enemyGroup)
+		{
+			dude.attack(player, dude);
+			FlxG.overlap(player, dude, switching);
+		}
 
 		// for (thorn in plantMan.getThorns())
 		// {

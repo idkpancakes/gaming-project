@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.tile.FlxCaveGenerator;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -278,13 +279,13 @@ class CaveDungeonGeneration
 		return FlxStringUtil.arrayToCSV(tileMap.getData(), width);
 	}
 
-	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, templateSprite:FlxSprite)
+	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, templateSprite:Dynamic)
 	{
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 
 		var itemCount = Math.floor(roomTiles.length * ratio);
 
-		var entities:FlxSpriteGroup = new FlxSpriteGroup();
+		var entities:FlxTypedGroup<Dynamic> = new FlxTypedGroup<Dynamic>();
 
 		// technicaly could set the same one twice,
 		for (i in 0...itemCount)
