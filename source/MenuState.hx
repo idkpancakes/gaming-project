@@ -77,6 +77,7 @@ class MenuState extends FlxState
 			add(playButton);
 			add(rulesButton);
 			add(options);
+			remove(skip);
 		}
 		else
 		{
@@ -91,11 +92,12 @@ class MenuState extends FlxState
 
 	public function clickRules()
 	{
-		FlxG.switchState(new RulesState());
+		openSubState(new RulesState());
+		// FlxG.switchState(new RulesState());
 	}
 
 	public function clickOptions()
 	{
-		FlxG.switchState(new PauseMenu());
+		openSubState(new PauseMenu());
 	}
 }

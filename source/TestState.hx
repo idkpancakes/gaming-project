@@ -29,7 +29,7 @@ enum abstract FinalTiles(Int) to Int
 	var WALL_UP_RIGHT = 4;
 	var WALL_DOWN_LEFT = 11;
 	var WALL_DOWN_RIGHT = 12;
-	var VOID = 296;
+	var VOID = 100;
 	var TORCH = 27;
 	var FIRE = 28;
 	var CHEST = 40;
@@ -81,14 +81,13 @@ class TestState extends FlxState
 	var hudCam:FlxCamera;
 
 	var tileMap:FlxTilemap;
-
 	var batGroup:FlxTypedGroup<Bat>;
-
-	public var hud:OverheadUI;
 
 	var plantMan:Boss;
 
 	static public var thorns:Enemy;
+
+	public var hud:OverheadUI;
 
 	override public function create()
 	{
@@ -155,7 +154,11 @@ class TestState extends FlxState
 
 		hud.updateHUD();
 		openPauseMenu();
-		player.died();
+
+		if (player.isDead())
+		{
+			gameOver();
+		}
 
 		player.charMovement(player);
 		FlxG.collide(player, tileMap);
@@ -178,6 +181,12 @@ class TestState extends FlxState
 				thorn.kill();
 			}
 		}
+	}
+
+	// handles the game over state/effect
+	function gameOver()
+	{
+		openSubState(new GameOver());
 	}
 
 	public function switching(player:Player, enemy:Enemy)

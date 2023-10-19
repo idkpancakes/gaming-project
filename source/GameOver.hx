@@ -4,13 +4,14 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 
-class GameOver extends FlxState
+class GameOver extends FlxSubState
 {
 	var restartButton:FlxButton;
 	var retryButton:FlxButton;
@@ -50,7 +51,7 @@ class GameOver extends FlxState
 
 	public function clickRetry()
 	{
-		FlxG.switchState(new TestState());
+		close();
 		Player.setDungeonHealth(3);
 	}
 }

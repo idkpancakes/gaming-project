@@ -108,11 +108,8 @@ class Player extends FlxSprite
 		dungeonHealth = newHealth;
 	}
 
-	public function died()
+	public function isDead():Bool
 	{
-		if (dungeonHealth == 0)
-		{
-			FlxG.switchState(new GameOver());
-		}
+		return dungeonHealth <= 0;
 	}
 }

@@ -4,13 +4,14 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 
-class RulesState extends FlxState
+class RulesState extends FlxSubState
 {
 	var rules:FlxText;
 	var backStory:FlxText;
@@ -23,7 +24,7 @@ class RulesState extends FlxState
 	{
 		background = new FlxSprite(0, 0);
 		background.loadGraphic(AssetPaths.backGround__png);
-		background.alpha = 0.5;
+		background.alpha = 1;
 		add(background);
 
 		rules = new FlxText(250, 10, "Rules");
@@ -61,6 +62,6 @@ class RulesState extends FlxState
 
 	public function backToMenu()
 	{
-		FlxG.switchState(new MenuState());
+		close();
 	}
 }
