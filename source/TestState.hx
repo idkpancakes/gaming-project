@@ -90,8 +90,6 @@ class TestState extends FlxState
 
 	static public var thorns:Enemy;
 
-	public var hud:OverheadUI;
-
 	override public function create()
 	{
 		var backGround = new FlxSprite();
@@ -180,7 +178,8 @@ class TestState extends FlxState
 		// {
 		// 	if (FlxG.overlap(player, thorn))
 		// 	{
-		// 		Player.setDungeonHealth(Player.getDungeonHealth() - 1);
+		// 		player.setDungeonHealth(player.getDungeonHealth() - 1);
+		// hud.health = player.getDungeonHealth();
 		// 		thorn.kill();
 		// 	}
 		// }
@@ -194,7 +193,7 @@ class TestState extends FlxState
 
 	public function switching(player:Player, enemy:Enemy)
 	{
-		FlxG.switchState(new CombatState());
+		FlxG.switchState(new CombatState(player, enemy));
 	}
 
 	public function openPauseMenu()

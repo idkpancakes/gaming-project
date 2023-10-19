@@ -21,7 +21,7 @@ class Enemy extends FlxSprite
 
 	var onSight:FlxTween;
 
-	public function inRange(player:Player, enemy:FlxSprite)
+	public function inRange(player:Player, enemy:Enemy)
 	{
 		var distanceX:Float = player.x - enemy.x;
 		var distanceY:Float = player.y - enemy.y;
@@ -35,7 +35,7 @@ class Enemy extends FlxSprite
 
 			if (FlxG.collide(player, enemy))
 			{
-				FlxG.switchState(new CombatState());
+				FlxG.switchState(new CombatState(player, enemy));
 			}
 		}
 	}

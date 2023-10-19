@@ -8,7 +8,7 @@ import flixel.FlxSprite;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -75,8 +75,9 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 	var screen:FlxSprite;
 
-	public function new() // here is where we add the new sceen, make it full size with the player on the forfont and then the bad guy behind
+	public function new(player:Player, enemy:Enemy)
 	{
+		// here is where we add the new sceen, make it full size with the player on the forfont and then the bad guy behind
 		super();
 
 		screen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT);
@@ -92,17 +93,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
-		playerSprite = new Player(background.x + 36, background.y + 16);
-		playerSprite.animation.frameIndex = 3;
-		playerSprite.active = false;
-		playerSprite.facing = RIGHT;
+		playerSprite = player;
 		add(playerSprite);
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
-		enemySprite = new Enemy(background.x + 76, background.y + 16, REGULAR);
-		enemySprite.animation.frameIndex = 3;
-		enemySprite.active = false;
-		enemySprite.facing = LEFT;
+		enemySprite = enemy;
 		add(enemySprite);
 
 		// setup the playerSprite's health display and add it to the group.
@@ -163,14 +158,23 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		// mark this object as not active and not visible so update and draw don't get called on it until we're ready to show it.
 		active = false;
 		visible = false;
+
 		// sounds will be either changed or removed,
-		fledSound = FlxG.sound.load(AssetPaths.fled__wav);
-		hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
-		loseSound = FlxG.sound.load(AssetPaths.lose__wav);
-		missSound = FlxG.sound.load(AssetPaths.miss__wav);
-		selectSound = FlxG.sound.load(AssetPaths.select__wav);
-		winSound = FlxG.sound.load(AssetPaths.win__wav);
-		combatSound = FlxG.sound.load(AssetPaths.combat__wav);
+		// fledSound = FlxG.sound.load(AssetPaths.fled__wav);
+		// hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
+		// loseSound = FlxG.sound.load(AssetPaths.lose__wav);
+		// missSound = FlxG.sound.load(AssetPaths.miss__wav);
+		// selectSound = FlxG.sound.load(AssetPaths.select__wav);
+		// winSound = FlxG.sound.load(AssetPaths.win__wav);
+		// combatSound = FlxG.sound.load(AssetPaths.combat__wav);
+
+		fledSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		hurtSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		loseSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		missSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		selectSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		winSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		combatSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 	}
 
 	/**
@@ -201,9 +205,9 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		updatePlayerHealth();
 
 		// setup our enemySprite
-		enemyMaxHealth = enemyHealth = if (enemy.type == REGULAR) 2 else 4; // each enemySprite will have health based on their type
+		enemyMaxHealth = enemyHealth = Std.int(enemy.health); // each enemySprite will have health based on their type
 		enemyHealthBar.value = 100; // the enemySprite's health bar starts at 100%
-		enemySprite.changeType(enemy.type); // change our enemySprite's image to match their type.
+		// enemySprite.changeType(enemy.type); // change our enemySprite's image to match their type.
 
 		// make sure we initialize all of these before we start so nothing looks 'wrong' the second time we get
 		wait = true;
@@ -263,7 +267,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		if (!wait) // if we're waiting, don't do any of this.
 		{
 			updateKeyboardInput();
-			updateTouchInput();
 		}
 		super.update(elapsed);
 	}
@@ -302,27 +305,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			selected = if (selected == FIGHT) MAGIC else FIGHT;
 			selectSound.play();
 			movePointer();
-		}
-		#end
-	}
-
-	function updateTouchInput()
-	{
-		#if FLX_TOUCH
-		for (touch in FlxG.touches.justReleased())
-		{
-			for (choice in choices.keys())
-			{
-				var text = choices[choice];
-				if (touch.overlaps(text))
-				{
-					selectSound.play();
-					selected = choice;
-					movePointer();
-					makeChoice();
-					return;
-				}
-			}
 		}
 		#end
 	}

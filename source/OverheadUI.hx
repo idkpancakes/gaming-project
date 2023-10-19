@@ -19,6 +19,8 @@ class OverheadUI extends FlxSpriteGroup
 	var weaponLogo:FlxSprite;
 	var weapon:Weapons = new Weapons(0, 0, EMPTY);
 
+	public var playerHealth:Int = 3;
+
 	var lineStyle:LineStyle = {color: FlxColor.WHITE, thickness: 30};
 
 	public function new()
@@ -42,7 +44,7 @@ class OverheadUI extends FlxSpriteGroup
 	public function updateHUD()
 	{
 		remove(weaponLogo);
-		healthCounter.text = Player.getDungeonHealth() + " / 3";
+		healthCounter.text = playerHealth + " / 3";
 		weaponLogo.loadGraphic(weapon.graphicPath);
 
 		add(weaponLogo);
@@ -51,13 +53,6 @@ class OverheadUI extends FlxSpriteGroup
 	public function setWeapon(weapon_:Weapons)
 	{
 		weapon = weapon_;
-		updateHUD();
-	}
-
-	public function healthSet()
-	{
-		var health = Player.getDungeonHealth();
-		healthCounter.text = health + " /3";
 		updateHUD();
 	}
 }
