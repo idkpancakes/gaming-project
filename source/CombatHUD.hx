@@ -100,6 +100,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		playerSprite.setPosition(200, 200);
 		add(playerSprite);
 
+		enemySprite = new Enemy(400, 100, enemy.bType);
+
+		enemySprite.setPosition(400, 100);
+		add(enemySprite);
+
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
 		cam.target = background;
@@ -114,7 +119,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(playerHealthCounter);
 
 		// create and add a FlxBar to show the enemySprite's health. We'll make it Red and Black.
-		enemyHealthBar = new FlxBar(enemySprite.x - 6, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
+		enemyHealthBar = new FlxBar(300, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
 		enemyHealthBar.createFilledBar(0xffdc143c, FlxColor.BLACK, true, FlxColor.BLACK);
 		add(enemyHealthBar);
 
@@ -193,11 +198,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	{
 		screen.drawFrame();
 		var screenPixels = screen.framePixels;
-
-		var enemySprite = new Enemy(400, 100, enemy.bType);
-
-		enemySprite.setPosition(400, 100);
-		add(enemySprite);
 
 		if (FlxG.renderBlit)
 			screenPixels.copyPixels(FlxG.camera.buffer, FlxG.camera.buffer.rect, new Point());
