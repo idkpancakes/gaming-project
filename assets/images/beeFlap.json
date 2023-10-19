@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "00_idle.png",
+	"frame": {"x":0,"y":0,"w":42,"h":43},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":43},
+	"sourceSize": {"w":42,"h":43}
+},
+{
+	"filename": "01_IdleFlapDown.png",
+	"frame": {"x":42,"y":0,"w":36,"h":43},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":43},
+	"sourceSize": {"w":36,"h":43}
+},
+{
+	"filename": "02_IdleFlap.png",
+	"frame": {"x":78,"y":0,"w":42,"h":43},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":43},
+	"sourceSize": {"w":42,"h":43}
+},
+{
+	"filename": "03_IdleFlap.png",
+	"frame": {"x":120,"y":0,"w":42,"h":43},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":43},
+	"sourceSize": {"w":42,"h":43}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "beeFlapTexture.png",
+	"format": "RGBA8888",
+	"size": {"w":162,"h":43},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:f729b98b8a6b1747ab32928e246cec8f:8507495133c6cd5608013544543cd94c:5f45842e2e44b8eee563c8841ce754bb$"
+}
+}
