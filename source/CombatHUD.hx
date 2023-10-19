@@ -3,6 +3,7 @@ package;
 import flash.filters.ColorMatrixFilter;
 import flash.geom.Matrix;
 import flash.geom.Point;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.effects.chainable.FlxEffectSprite;
@@ -75,6 +76,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 	var screen:FlxSprite;
 
+	var cam:FlxCamera;
+
 	public function new(player:Player, enemy:Enemy)
 	{
 		// here is where we add the new sceen, make it full size with the player on the forfont and then the bad guy behind
@@ -86,18 +89,23 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		background = new FlxSprite().makeGraphic(120, 120, FlxColor.WHITE);
-		background.drawRect(1, 1, 118, 44, FlxColor.BLACK);
-		background.drawRect(1, 46, 118, 73, FlxColor.BLACK);
-		background.screenCenter();
-		add(background);
+		background = new FlxSprite().makeGraphic(630, 480, FlxColor.GREEN);
+
+		// add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
 		playerSprite = player;
+		playerSprite.setPosition(200, 200);
+		add(playerSprite);
+
+		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		FlxG.cameras.add(cam);
+		cam.target = playerSprite;
 		add(playerSprite);
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
 		enemySprite = enemy;
+		enemySprite.setPosition(200, 200);
 		add(enemySprite);
 
 		// setup the playerSprite's health display and add it to the group.
@@ -113,8 +121,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		// create our choices and add them to the group.  // here is where we add each option of attack
 		choices = new Map();
-		choices[FIGHT] = new FlxText(background.x + 30, background.y + 48, 85, "FIGHT", 22);
-		choices[MAGIC] = new FlxText(background.x + 25, background.y + 48, 85, "MAGIC", 22);
+		choices[FIGHT] = new FlxText(50, 300, 85, "FIGHT", 22);
+		choices[MAGIC] = new FlxText(50, 350, 85, "MAGIC", 22);
 
 		add(choices[FIGHT]);
 
@@ -149,11 +157,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(results);
 
 		// like we did in our HUD class, we need to set the scrollFactor on each of our children objects to 0,0. We also set alpha to 0 (so we can fade this in)
-		forEach(function(sprite:FlxSprite)
-		{
-			sprite.scrollFactor.set();
-			sprite.alpha = 0;
-		});
+		// forEach(function(sprite:FlxSprite)
+		// {
+		// 	sprite.scrollFactor.set();
+		// 	sprite.alpha = 0;
+		// });
 
 		// mark this object as not active and not visible so update and draw don't get called on it until we're ready to show it.
 		active = false;
