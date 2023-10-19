@@ -89,24 +89,23 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		background = new FlxSprite().makeGraphic(630, 480, FlxColor.GREEN);
+		background = new FlxSprite().makeGraphic(630, 480, FlxColor.MAGENTA);
 
-		// add(background);
+		add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
-		playerSprite = player;
+
+		playerSprite = new Player();
+		playerSprite.loadGraphic(AssetPaths.ditto__png);
 		playerSprite.setPosition(200, 200);
 		add(playerSprite);
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
-		cam.target = playerSprite;
-		add(playerSprite);
+		cam.target = background;
+		add(background);
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
-		enemySprite = enemy;
-		enemySprite.setPosition(200, 200);
-		add(enemySprite);
 
 		// setup the playerSprite's health display and add it to the group.
 		playerHealthCounter = new FlxText(0, playerSprite.y + playerSprite.height + 2, 0, "3 / 3", 8);
@@ -194,6 +193,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	{
 		screen.drawFrame();
 		var screenPixels = screen.framePixels;
+
+		var enemySprite = new Enemy(400, 100, enemy.bType);
+
+		enemySprite.setPosition(400, 100);
+		add(enemySprite);
 
 		if (FlxG.renderBlit)
 			screenPixels.copyPixels(FlxG.camera.buffer, FlxG.camera.buffer.rect, new Point());
