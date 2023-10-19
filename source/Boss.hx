@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import haxe.Timer;
-import js.html.AbortController;
 
 enum BossType
 {
@@ -21,14 +20,14 @@ class Boss extends Enemy
 	var thornMax:Int = 10;
 	var thornCount:Int = 0;
 
-	public var thorns:FlxTypedGroup<Projectiles>;
+	public var thorns:FlxTypedGroup<Projectiles> = new FlxTypedGroup<Projectiles>();
 
 	public function new(x:Float, y:Float, type:BossType)
 	{
 		super(x, y);
 		bType = type;
 
-		switch (bType)
+		switch (type)
 		{
 			case MINI:
 				loadGraphic(AssetPaths.CarnivorousPlantIdle__png);
@@ -74,5 +73,11 @@ class Boss extends Enemy
 	public function getThorns():FlxTypedGroup<Projectiles>
 	{
 		return thorns;
+	}
+
+	override public function destroy()
+	{
+		super.destroy();
+		thornTimer.stop();
 	}
 }
