@@ -1,13 +1,16 @@
 package;
 
+import Bat.DEnemy.*;
 import CaveDungeonGeneration.CaveDungeonGeneration;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
+import haxe.Log;
 import haxe.ds.BalancedTree;
 
 enum abstract TileType(Int) to Int
@@ -85,46 +88,30 @@ class TestState extends FlxState
 	var hudCam:FlxCamera;
 
 	var tileMap:FlxTilemap;
-	var batGroup:FlxTypedGroup<Bat>;
+	var batGroup:FlxTypedSpriteGroup<Bat>;
 
 	public var hud:OverheadUI;
 
 	var plantMan:Bat;
 	var tileSet = AssetPaths.biggerBoy__png;
 
+	var enemyGroup:FlxTypedSpriteGroup<Bat>;
+
 	static public var thorns:Enemy;
+
+	var levels:Array<FlxTilemap> = new Array();
 
 	override public function create()
 	{
+		enemyGroup = new FlxTypedSpriteGroup<Bat>();
+
 		var backGround = new FlxSprite();
 		backGround.loadGraphic(AssetPaths.bg_resized__png);
 		add(backGround);
 
-		tileMap = new FlxTilemap();
-		var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
-		tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 48, 48);
+		buildLevels();
 
-		tileMap.screenCenter();
-
-		tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
-		tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
-
-		tileMap.setTileProperties(FinalTiles.VOID, ANY);
-		tileMap.setTileProperties(FinalTiles.TORCH, NONE);
-		tileMap.setTileProperties(FinalTiles.FIRE, NONE);
-		tileMap.setTileProperties(FinalTiles.CHEST, NONE);
-		tileMap.setTileProperties(FinalTiles.HEART, NONE);
-		tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
-		tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
-		tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
-		tileMap.setTileProperties(FinalTiles.ROOM, NONE);
-
+		tileMap = levels.pop();
 		tileMap.follow();
 
 		add(tileMap);
@@ -145,9 +132,9 @@ class TestState extends FlxState
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
 
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
-		add(wep);
 
-		//	add(plantMan.getThorns());
+		add(wep);
+		add(enemyGroup);
 
 		super.create();
 	}
@@ -155,6 +142,12 @@ class TestState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		// DEBUG!
+		if (FlxG.keys.justPressed.L)
+		{
+			loadLevel();
+		}
 
 		hud.updateHUD();
 		openPauseMenu();
@@ -173,6 +166,7 @@ class TestState extends FlxState
 			hud.setWeapon(wep);
 		}
 
+		//
 		plantMan.attack(player, plantMan);
 
 		FlxG.overlap(player, plantMan, switching);
@@ -186,6 +180,80 @@ class TestState extends FlxState
 		// 		thorn.kill();
 		// 	}
 		// }
+	}
+
+	function buildLevels()
+	{
+		for (i in 0...5)
+		{
+			var _tileMap = new FlxTilemap();
+			var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
+			_tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 48, 48);
+
+			_tileMap.screenCenter();
+
+			_tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+			_tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+			_tileMap.setTileProperties(FinalTiles.VOID, ANY);
+			_tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+			_tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+			_tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+			_tileMap.setTileProperties(FinalTiles.HEART, NONE);
+			_tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+			_tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+			_tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+			_tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+
+			levels.push(_tileMap);
+		}
+
+		Log.trace(levels);
+	}
+
+	function loadLevel()
+	{
+		if (levels.length == 0)
+			return;
+
+		// cleanup!
+
+		remove(tileMap);
+		remove(hud);
+		remove(player);
+		remove(plantMan); // kill this
+		FlxG.cameras.remove(cam);
+
+		tileMap = levels.pop();
+		tileMap.follow();
+
+		add(tileMap);
+		hud = new OverheadUI();
+		add(hud);
+
+		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
+		player = new Player(startPoint.x, startPoint.y);
+
+		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		FlxG.cameras.add(cam);
+		cam.target = player;
+		add(player);
+
+		// plantMan = new Bat(startPoint.x + 300, startPoint.y, BEE);
+		// add(plantMan);
+
+		hud.setPosition(cam.scroll.x, cam.scroll.y);
+
+		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
+		add(wep);
+
+		placeEnemies();
 	}
 
 	// handles the game over state/effect
@@ -206,6 +274,17 @@ class TestState extends FlxState
 			openSubState(new PauseMenu());
 		}
 	}
+
+	function placeEnemies(?density:Float = 0.05)
+	{
+		var batTemplate:Bat = new Bat(0, 0, BAT);
+
+		var batGroup = CaveDungeonGeneration.placeEntities(tileMap, density, batTemplate);
+		enemyGroup.clear();
+
+		for (bat in batGroup)
+			enemyGroup.add(bat);
+	}
 }
 /**
 	*JERRY
@@ -215,5 +294,5 @@ class TestState extends FlxState
 	* /./\  )______   \__ \
 	*./  / /\ \   | \ \  \ \
 	*   / /  \ \  | |\ \  \7
-	*    "     "    "  "        VK
+	*    "     "    "  "        VK <--- sad
 **/
