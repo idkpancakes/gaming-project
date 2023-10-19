@@ -154,6 +154,8 @@ class TestState extends FlxState
 		super.update(elapsed);
 
 		hud.updateHUD();
+		openPauseMenu();
+		player.died();
 
 		player.charMovement(player);
 		FlxG.collide(player, tileMap);
@@ -172,7 +174,7 @@ class TestState extends FlxState
 		{
 			if (FlxG.overlap(player, thorn))
 			{
-				Player.setDungenHealth(Player.getDungeonHealth() - 1);
+				Player.setDungeonHealth(Player.getDungeonHealth() - 1);
 				thorn.kill();
 			}
 		}
@@ -181,6 +183,14 @@ class TestState extends FlxState
 	public function switching(player:Player, enemy:Enemy)
 	{
 		FlxG.switchState(new CombatState());
+	}
+
+	public function openPauseMenu()
+	{
+		if (FlxG.keys.pressed.P)
+		{
+			openSubState(new PauseMenu());
+		}
 	}
 }
 /**

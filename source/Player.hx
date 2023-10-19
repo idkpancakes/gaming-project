@@ -103,8 +103,16 @@ class Player extends FlxSprite
 		return dungeonHealth;
 	}
 
-	public static function setDungenHealth(newHealth:Int)
+	public static function setDungeonHealth(newHealth:Int)
 	{
 		dungeonHealth = newHealth;
+	}
+
+	public function died()
+	{
+		if (dungeonHealth == 0)
+		{
+			FlxG.switchState(new GameOver());
+		}
 	}
 }

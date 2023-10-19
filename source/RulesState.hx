@@ -48,11 +48,19 @@ class RulesState extends FlxState
 		keyPic.scale.set(0.75, 0.75);
 		add(keyPic);
 
+		back = new FlxButton(10, 400, "Back", backToMenu);
+		add(back);
+
 		super.create();
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+	}
+
+	public function backToMenu()
+	{
+		FlxG.switchState(new MenuState());
 	}
 }

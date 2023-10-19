@@ -18,6 +18,8 @@ class MenuState extends FlxState
 	var background:FlxSprite;
 	var skip:FlxButton;
 
+	var options:FlxButton;
+
 	override public function create()
 	{
 		super.create();
@@ -27,7 +29,7 @@ class MenuState extends FlxState
 		background.alpha = 0.5;
 		add(background);
 
-		skip = new FlxButton(400, 400, "Skip", skipText);
+		skip = new FlxButton(500, 400, "Skip", skipText);
 		add(skip);
 
 		storyText = new FlxText(0, FlxG.height, FlxG.width, "The year was xxxx, it has been xxxx years since they have taken over. \n
@@ -46,6 +48,10 @@ class MenuState extends FlxState
 		rulesButton = new FlxButton(playButton.getPosition().x, playButton.getPosition().y + 70, "Rules", clickRules);
 		rulesButton.scale.x = 2;
 		rulesButton.scale.y = 2;
+
+		options = new FlxButton(rulesButton.getPosition().x, rulesButton.getPosition().y + 70, "Options", clickOptions);
+		options.scale.x = 2;
+		options.scale.y = 2;
 	}
 
 	override public function update(elapsed:Float)
@@ -60,6 +66,7 @@ class MenuState extends FlxState
 		remove(storyText);
 		add(playButton);
 		add(rulesButton);
+		add(options);
 		remove(skip);
 	}
 
@@ -69,6 +76,7 @@ class MenuState extends FlxState
 		{
 			add(playButton);
 			add(rulesButton);
+			add(options);
 		}
 		else
 		{
@@ -84,5 +92,10 @@ class MenuState extends FlxState
 	public function clickRules()
 	{
 		FlxG.switchState(new RulesState());
+	}
+
+	public function clickOptions()
+	{
+		FlxG.switchState(new PauseMenu());
 	}
 }
