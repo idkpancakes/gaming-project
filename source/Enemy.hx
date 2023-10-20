@@ -58,7 +58,7 @@ class Enemy extends FlxSprite
 				animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
 
 			case BEE:
-				loadGraphic(AssetPaths.beeFlapTexture__png, true, 42, 43);
+				loadGraphic(AssetPaths.beeFlapTexture__png, true, 40, 43);
 				solid = true;
 				animation.add("idle", [0, 1, 2, 3, 4], 4, true);
 				animation.play("idle");

@@ -77,6 +77,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	var screen:FlxSprite;
 
 	var cam:FlxCamera;
+	var center:FlxSprite;
 
 	public function new(player:Player, enemy:Enemy)
 	{
@@ -89,7 +90,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		background = new FlxSprite().makeGraphic(630, 480, FlxColor.MAGENTA);
+		background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
 
 		add(background);
 
@@ -98,35 +99,47 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		playerSprite = new Player();
 		playerSprite.loadGraphic(AssetPaths.ditto__png);
 		playerSprite.setPosition(200, 200);
+		playerSprite.scale.set(3, 3);
 		add(playerSprite);
 
 		enemySprite = new Enemy(400, 100, enemy.bType);
-
 		enemySprite.setPosition(400, 100);
+		enemySprite.scale.set(1.5, 2);
 		add(enemySprite);
+
+		center = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
+		center.makeGraphic(1, 1, FlxColor.TRANSPARENT);
+		center.alpha = 0;
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
-		cam.target = background;
-		add(background);
+		cam.target = center;
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
 
 		// setup the playerSprite's health display and add it to the group.
-		playerHealthCounter = new FlxText(0, playerSprite.y + playerSprite.height + 2, 0, "3 / 3", 8);
+		playerHealthCounter = new FlxText(playerSprite.x, playerSprite.y - 50, 0, "3 / 3", 16);
 		playerHealthCounter.alignment = CENTER;
-		playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
+		// playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
 		add(playerHealthCounter);
 
 		// create and add a FlxBar to show the enemySprite's health. We'll make it Red and Black.
-		enemyHealthBar = new FlxBar(300, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
-		enemyHealthBar.createFilledBar(0xffdc143c, FlxColor.BLACK, true, FlxColor.BLACK);
+		enemyHealthBar = new FlxBar(playerHealthCounter.x + 200, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
+		enemyHealthBar.createFilledBar(FlxColor.PURPLE, FlxColor.BLACK, true, FlxColor.RED);
 		add(enemyHealthBar);
+
+		var moveBox = new FlxSprite(0, 300);
+		moveBox.makeGraphic(640, 300, FlxColor.BLACK);
+		add(moveBox);
+
+		var divider = new FlxSprite(0, 300);
+		divider.makeGraphic(640, 10, FlxColor.WHITE);
+		add(divider);
 
 		// create our choices and add them to the group.  // here is where we add each option of attack
 		choices = new Map();
-		choices[FIGHT] = new FlxText(50, 300, 85, "FIGHT", 22);
-		choices[MAGIC] = new FlxText(50, 350, 85, "MAGIC", 22);
+		choices[FIGHT] = new FlxText(50, 350, 85, "FIGHT", 22);
+		choices[MAGIC] = new FlxText(50, 400, 85, "MAGIC", 22);
 
 		add(choices[FIGHT]);
 
