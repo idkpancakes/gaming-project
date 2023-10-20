@@ -9,12 +9,14 @@ import flixel.FlxSprite;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxRandom;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import haxe.Log;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -58,6 +60,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	var playerHealthBar:FlxBar;
 	var playerMaxHealth:Int;
 
+	var displayMove:FlxText;
+
 	var damages:Array<FlxText>; // This array will contain 2 FlxText objects which will appear to show damage dealt (or misses)
 
 	var pointer:FlxSprite; // This will be the pointer to show which option (Fight or Flee) the user is pointing to.
@@ -78,6 +82,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	var combatSound:FlxSound;
 
 	var screen:FlxSprite;
+
+	var random:FlxRandom;
 
 	var cam:FlxCamera;
 	var center:FlxSprite;
@@ -163,7 +169,9 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		pointer.visible = false;
 		add(pointer);
 
-		// create our damage texts. We'll make them be white text with a red shadow (so they stand out).
+		displayMove = new FlxText(50, 350, " Attack", 22);
+		// add() // create our damage texts. We'll make them be white text with a red shadow (so they stand out).
+
 		damages = new Array<FlxText>();
 		damages.push(new FlxText(0, 0, 70));
 		damages.push(new FlxText(0, 0, 70));
@@ -233,6 +241,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		this.player = new Player(player.x, player.y);
 		this.player.weapon = player.weapon;
+		this.player.magic = player.magic;
 
 		// setup our enemySprite
 		playerMaxHealth = playerHealth;
@@ -396,10 +405,12 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				// if MAGIC was picked...
 				// ...the playerSprite attacks the enemySprite first
 				// they have an 85% chance to hit the enemySprite
-				if (FlxG.random.bool(85))
+				if (FlxG.random.bool(35))
 				{
-					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
-					damages[1].text = "1";
+					var mDamage = player.magic.getMagDamage();
+					mDamage = mDamage * random.int(0, 10); // damage = damage * random.int(0, 10);
+
+					damages[1].text = mDamage + "";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
 						onComplete: function(_)
 						{
@@ -407,7 +418,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 						}
 					});
 					hurtSound.play();
-					enemyHealth--;
+					enemyHealth -= mDamage;
 					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
 				}
 				else

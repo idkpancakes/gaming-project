@@ -1,12 +1,14 @@
 package;
 
+import MagicAttack.MagicType;
 import Weapons.WeaponType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
-	public var weapon:Weapons = new Weapons(0, 0, WeaponType.EMPTY);
+	public var weapon:Weapons = new Weapons(0, 0, WeaponType.FIST);
+	public var magic:MagicAttack = new MagicAttack(0, 0, MagicType.NOSCROLL);
 
 	var dungeonHealth = 3;
 	var combatHealth = 10;
@@ -114,6 +116,7 @@ class Player extends FlxSprite
 	{
 		var _player = new Player(this.x, this.y);
 		_player.weapon = this.weapon;
+		_player.magic = this.magic;
 		_player.combatHealth = this.combatHealth;
 		_player.dungeonHealth = this.dungeonHealth;
 

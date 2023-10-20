@@ -18,6 +18,8 @@ class MenuState extends FlxState
 	var background:FlxSprite;
 	var skip:FlxButton;
 
+	var title:FlxText;
+
 	var options:FlxButton;
 
 	override public function create()
@@ -32,7 +34,7 @@ class MenuState extends FlxState
 		skip = new FlxButton(500, 400, "Skip", skipText);
 		add(skip);
 
-		storyText = new FlxText(0, FlxG.height, FlxG.width, "The year was xxxx, it has been xxxx years since they have taken over. \n
+		storyText = new FlxText(0, FlxG.height, FlxG.width, "The year was xxxx, it has been 17 years since they have taken over. \n
 									Over the years humanity has fallen from their place at the top, while they have gained more and more control\n 
 									In the beginning we tried to fight back but with their quick evolution we were no match\n");
 
@@ -52,6 +54,9 @@ class MenuState extends FlxState
 		options = new FlxButton(rulesButton.getPosition().x, rulesButton.getPosition().y + 70, "Options", clickOptions);
 		options.scale.x = 2;
 		options.scale.y = 2;
+
+		title = new FlxText(10, 50, 600, "A World Overtaken: Man Versus Swarm");
+		title.setFormat(null, 30, FlxColor.RED, FlxTextAlign.CENTER);
 	}
 
 	override public function update(elapsed:Float)
@@ -66,6 +71,7 @@ class MenuState extends FlxState
 		remove(storyText);
 		add(playButton);
 		add(rulesButton);
+		add(title);
 		add(options);
 		remove(skip);
 	}
@@ -77,6 +83,7 @@ class MenuState extends FlxState
 			add(playButton);
 			add(rulesButton);
 			add(options);
+			add(title);
 			remove(skip);
 		}
 		else

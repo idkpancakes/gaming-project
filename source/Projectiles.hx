@@ -1,14 +1,8 @@
 package;
 
+import Enemy.DEnemy;
 import flixel.FlxSprite;
 import haxe.Timer;
-
-enum ArrowType
-{
-	THORN;
-	STINGER;
-	ARROW;
-}
 
 class Projectiles extends Enemy
 {

@@ -84,6 +84,8 @@ class TestState extends FlxState
 
 	var combatState:CombatState;
 
+	var scroll:MagicAttack;
+
 	var bat1:DungeonEnemy;
 	var wep:Weapons;
 
@@ -170,10 +172,18 @@ class TestState extends FlxState
 			player.weapon = wep;
 			hud.setWeapon(wep);
 		}
+
+		if (FlxG.overlap(player, scroll) && FlxG.keys.justPressed.SPACE)
+		{
+			player.magic = scroll;
+			hud.setMagic(scroll);
+		}
 	}
 
 	function combatStateSwitch(player:Player, enemy:DungeonEnemy)
 	{
+		Log.trace(player.clone().magic);
+
 		var combatState = new CombatState(player.clone(), enemy);
 		combatState.closeCallback = function()
 		{
@@ -187,11 +197,6 @@ class TestState extends FlxState
 		}
 
 		openSubState(combatState);
-	}
-
-	function startCombatState(player:Player, enemy:Enemy)
-	{
-		openSubState(new CombatState(player, enemy));
 	}
 
 	function buildLevels()

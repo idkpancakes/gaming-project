@@ -11,7 +11,7 @@ enum WeaponType
 	BOW;
 	SWORD;
 	MAGIC;
-	EMPTY;
+	FIST;
 }
 
 class Weapons extends FlxSprite
@@ -47,7 +47,7 @@ class Weapons extends FlxSprite
 			case MAGIC:
 				// loadGraphic(AssetPaths.magicScroll__png);
 				damage = 5;
-			case EMPTY:
+			case FIST:
 				// damage = 1;
 				damage = 4;
 				null;

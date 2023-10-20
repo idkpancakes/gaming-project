@@ -24,7 +24,7 @@ class RulesState extends FlxSubState
 	{
 		background = new FlxSprite(0, 0);
 		background.loadGraphic(AssetPaths.backGround__png);
-		background.alpha = 1;
+		background.alpha = 1.0;
 		add(background);
 
 		rules = new FlxText(250, 10, "Rules");
@@ -40,7 +40,7 @@ class RulesState extends FlxSubState
 
 		controls = new FlxText(225, 250, 400, "To control the father you must use the WASD keys 
 											Dungeon View: when not in combat you are free to traverse the dungeon but you must be on the look out for roaming enemies and traps
-											Combat View: once an enemy makes contact with you, you enter a combat state where a turn based battle will begin");
+											Combat View: once an enemy makes contact with you, you enter a combat state where a turn based battle will begin. In this state can attack the enemy using magic or a weapon.");
 		controls.setFormat(null, 12, FlxColor.RED);
 		add(controls);
 
