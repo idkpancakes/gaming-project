@@ -1,5 +1,5 @@
-import TestState.FinalTiles;
-import TestState.TileType;
+import OverworldState.FinalTiles;
+import OverworldState.TileType;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -38,7 +38,7 @@ typedef Bitmask =
 	dirBits:Array<FlxDirectionFlags>
 }
 
-class CaveDungeonGeneration
+class LevelGenerator
 {
 	static public var tileMap:FlxTilemap = new FlxTilemap();
 

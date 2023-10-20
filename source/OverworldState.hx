@@ -1,7 +1,7 @@
 package;
 
-import CaveDungeonGeneration.CaveDungeonGeneration;
 import Enemy.DEnemy.*;
+import LevelGenerator.LevelGenerator;
 import MagicAttack.MagicType;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -76,7 +76,7 @@ enum abstract FinalTiles(Int) to Int
 // 	var FLOOR_2 = 22;
 // }
 
-class TestState extends FlxState
+class OverworldState extends FlxState
 {
 	final WIDTH:Int = 32;
 	final HEIGHT:Int = 32;
@@ -209,7 +209,7 @@ class TestState extends FlxState
 		for (i in 0...3)
 		{
 			var _tileMap = new FlxTilemap();
-			var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
+			var caveDungeonCSV = LevelGenerator.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
 			_tileMap.loadMapFromCSV(caveDungeonCSV, tileSet, 48, 48);
 
 			_tileMap.screenCenter();
@@ -420,7 +420,7 @@ class TestState extends FlxState
 			// Bat level
 			case 0:
 				var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
-				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, batTemplate);
+				enemyGroup = LevelGenerator.placeEnemies(tileMap, 0.02, batTemplate);
 
 				wep = new Weapons(randomPoint.x, randomPoint.y, BOW);
 				add(wep);
@@ -430,9 +430,9 @@ class TestState extends FlxState
 				var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
 				var plantTemplate:DungeonEnemy = new DungeonEnemy(0, 0, PLANT);
 
-				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, batTemplate);
+				enemyGroup = LevelGenerator.placeEnemies(tileMap, 0.02, batTemplate);
 
-				for (plant in CaveDungeonGeneration.placeEnemies(tileMap, 0.02, plantTemplate))
+				for (plant in LevelGenerator.placeEnemies(tileMap, 0.02, plantTemplate))
 				{
 					enemyGroup.add(plant);
 				}
@@ -458,9 +458,9 @@ class TestState extends FlxState
 				var plantTemplate:DungeonEnemy = new DungeonEnemy(0, 0, PLANT);
 				var beeTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BEE);
 
-				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, plantTemplate);
+				enemyGroup = LevelGenerator.placeEnemies(tileMap, 0.02, plantTemplate);
 
-				for (bee in CaveDungeonGeneration.placeEnemies(tileMap, 0.02, beeTemplate))
+				for (bee in LevelGenerator.placeEnemies(tileMap, 0.02, beeTemplate))
 				{
 					enemyGroup.add(bee);
 				}
