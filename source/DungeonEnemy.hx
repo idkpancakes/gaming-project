@@ -120,11 +120,11 @@ class DungeonEnemy extends Enemy
 
 	override public function destroy()
 	{
+		super.destroy();
+
 		if (thornTimer != null)
 			thornTimer.stop();
 		thorns.kill();
-
-		super.destroy();
 	}
 
 	public function getType()

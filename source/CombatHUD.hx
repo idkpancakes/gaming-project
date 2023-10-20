@@ -99,8 +99,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		// background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
-		background = new FlxSprite().loadGraphic(AssetPaths.bee_boss_bg__jpg);
+		background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
+		// background = new FlxSprite().loadGraphic(AssetPaths.bee_boss_bg__jpg);
 
 		add(background);
 
@@ -174,7 +174,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		pointer.visible = false;
 		add(pointer);
 
-		displayMove = new FlxText(50, 350, " Attack", 22);
+		displayMove = new FlxText(150, 350, " Attack", 22);
 		displayMove.visible = false;
 		add(displayMove); // create our damage texts. We'll make them be white text with a red shadow (so they stand out).
 
@@ -416,6 +416,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				if (FlxG.random.bool(35))
 				{
 					var mDamage = player.magic.getMagDamage();
+					displayMove.text = "Magic Selected";
 					mDamage = mDamage * FlxG.random.int(0, 10); // damage = damage * random.int(0, 10);
 
 					damages[1].text = mDamage + "";

@@ -48,8 +48,8 @@ class Weapons extends FlxSprite
 				// loadGraphic(AssetPaths.magicScroll__png);
 				damage = 5;
 			case FIST:
-				// damage = 1;
-				damage = 4;
+				damage = 1;
+				// damage = 4;
 				null;
 		}
 	}

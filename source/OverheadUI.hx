@@ -21,6 +21,8 @@ class OverheadUI extends FlxSpriteGroup
 	var scrollText:FlxText;
 	var magicLogo:FlxSprite;
 
+	public var levelID:Int;
+
 	var lvlCounter:FlxText;
 	var magic:MagicAttack = new MagicAttack(0, 0, NOSCROLL);
 	var weapon:Weapons = new Weapons(0, 0, FIST);

@@ -267,7 +267,9 @@ class TestState extends FlxState
 	function loadLevel()
 	{
 		if (levelID >= levels.length)
+		{
 			return;
+		}
 
 		remove(tileMap);
 		remove(hud);
@@ -389,7 +391,7 @@ class TestState extends FlxState
 			// Plant Boss Level
 			case 2:
 				// mini boss type
-				var plantMiniBoss = new DungeonEnemy(0, 0, FINAL);
+				var plantMiniBoss = new DungeonEnemy(0, 0, MINI);
 
 				// change to a constant, consult cassandra
 				plantMiniBoss.setPosition(450, 150);
