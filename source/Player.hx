@@ -107,6 +107,10 @@ class Player extends FlxSprite
 		combatHealth = newHealth;
 	}
 
+	/**
+	 * 
+	 */
+
 	public function isDead():Bool
 	{
 		return dungeonHealth <= 0 || combatHealth <= 0;

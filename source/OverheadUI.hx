@@ -62,7 +62,6 @@ class OverheadUI extends FlxSpriteGroup
 		add(weaponText);
 		add(weaponLogo);
 		add(magicLogo);
-
 		add(scrollText);
 		add(keyCounter);
 		add(keyLogo);

@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -18,11 +19,13 @@ class GameOver extends FlxSubState
 	var death:FlxText;
 	var player:Player;
 
+	var center:FlxSprite;
+
+	var menuCam:FlxCamera;
+
 	override public function create()
 	{
-		death = new FlxText(250, 50, "You Died");
-		death.setFormat(null, 30, FlxColor.PURPLE);
-		add(death);
+		super.create();
 
 		restartButton = new FlxButton(0, 0, "Restart", clickRestart);
 		restartButton.screenCenter();
@@ -35,7 +38,17 @@ class GameOver extends FlxSubState
 		retryButton.scale.y = 2;
 		add(retryButton);
 
-		super.create();
+		death = new FlxText(restartButton.getPosition().x - 40, restartButton.getPosition().y - 70, "You Died");
+		death.setFormat(null, 30, FlxColor.PURPLE);
+		add(death);
+
+		center = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
+		center.makeGraphic(1, 1, FlxColor.TRANSPARENT);
+		center.alpha = 0;
+
+		menuCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		FlxG.cameras.add(menuCam);
+		menuCam.target = center;
 	}
 
 	override public function update(elapsed:Float)
