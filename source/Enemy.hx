@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
+import flixel.sound.FlxSound;
 
 enum abstract TileTypes(Int) to Int
 {
@@ -18,6 +19,7 @@ class Enemy extends FlxSprite
 {
 	var inCombat:Bool = false;
 	var range:Int = 200;
+	var stepSound:FlxSound;
 
 	var onSight:FlxTween;
 
@@ -38,5 +40,9 @@ class Enemy extends FlxSprite
 				FlxG.switchState(new CombatState(player, enemy));
 			}
 		}
+
+		//Step sound for enemy but only 50% of volume since there will be many enemies
+		stepSound = FlxG.sound.load(AssetPaths.Footsteps__wav, 0.5);
+		stepSound.proximity(x, y, FlxG.camera.target, FlxG.width * 0.6);
 	}
 }
