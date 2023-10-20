@@ -144,7 +144,7 @@ class TestState extends FlxState
 		}
 
 		plantMan.attack(player, plantMan);
-		FlxG.overlap(player, plantMan, startCombatState);
+		FlxG.overlap(player, plantMan, combatStateSwitch);
 
 		// -10 points
 		for (enemy in enemyGroup)
