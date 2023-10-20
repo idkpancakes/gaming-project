@@ -1,6 +1,5 @@
 package;
 
-import Bat.DEnemy.*;
 import CaveDungeonGeneration.CaveDungeonGeneration;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -89,23 +88,17 @@ class TestState extends FlxState
 
 	var tileMap:FlxTilemap;
 
-	var batGroup:FlxTypedSpriteGroup<Bat>;
-
 	public var hud:OverheadUI;
 
-	var plantMan:Bat;
+	var plantMan:DungeonEnemy;
 	var tileSet = AssetPaths.biggerBoy__png;
 
-	var enemyGroup:FlxTypedSpriteGroup<Bat>;
-  
 	static public var thorns:Enemy;
 
 	var levels:Array<FlxTilemap> = new Array();
 
 	override public function create()
 	{
-		enemyGroup = new FlxTypedSpriteGroup<Bat>();
-
 		var backGround = new FlxSprite();
 		backGround.loadGraphic(AssetPaths.bg_resized__png);
 		add(backGround);
@@ -127,7 +120,7 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
+		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BAT);
 		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
@@ -135,7 +128,7 @@ class TestState extends FlxState
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 
 		add(wep);
-		add(enemyGroup);
+		//	add(enemyGroup);
 
 		super.create();
 	}
@@ -160,19 +153,16 @@ class TestState extends FlxState
 
 		player.charMovement(player);
 		FlxG.collide(player, tileMap);
-		FlxG.collide(batGroup, tileMap);
+		FlxG.collide(plantMan, tileMap);
 
 		if (FlxG.overlap(player, wep) && FlxG.keys.justPressed.SPACE)
 		{
 			hud.setWeapon(wep);
 		}
 
+		plantMan.attack(player, plantMan);
+
 		// -10 points
-		for (dude in enemyGroup)
-		{
-			dude.attack(player, dude);
-			FlxG.overlap(player, dude, switching);
-		}
 
 		// for (thorn in plantMan.getThorns())
 		// {
@@ -248,15 +238,15 @@ class TestState extends FlxState
 		cam.target = player;
 		add(player);
 
-		// plantMan = new Bat(startPoint.x + 300, startPoint.y, BEE);
-		// add(plantMan);
+		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
+		add(plantMan);
 
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
 
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 		add(wep);
 
-		placeEnemies();
+		// placeEnemies();
 	}
 
 	// handles the game over state/effect
@@ -278,16 +268,14 @@ class TestState extends FlxState
 		}
 	}
 
-	function placeEnemies(?density:Float = 0.05)
-	{
-		var batTemplate:Bat = new Bat(0, 0, BAT);
-
-		var batGroup = CaveDungeonGeneration.placeEntities(tileMap, density, batTemplate);
-		enemyGroup.clear();
-
-		for (bat in batGroup)
-			enemyGroup.add(bat);
-	}
+	// function placeEnemies(?density:Float = 0.05)
+	// {
+	// 	var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
+	// 	var batGroup = CaveDungeonGeneration.placeEntities(tileMap, density, batTemplate);
+	// 	enemyGroup.clear();
+	// 	for (bat in batGroup)
+	// 		enemyGroup.add(bat);
+	// }
 }
 /**
 	*JERRY
