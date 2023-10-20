@@ -18,7 +18,7 @@ class Player extends FlxSprite
 		loadGraphic(AssetPaths.mainCharacterTexture__png, true, 67, 67);
 		solid = true;
 
-		scale.set(0.5, 0.5);
+		scale.set(0.65, 0.65);
 		updateHitbox();
 		// drag.x = drag.y = 800;
 
