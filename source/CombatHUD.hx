@@ -185,13 +185,13 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		visible = false;
 
 		// sounds will be either changed or removed,
-		// fledSound = FlxG.sound.load(AssetPaths.fled__wav);
-		// hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
-		// loseSound = FlxG.sound.load(AssetPaths.lose__wav);
-		// missSound = FlxG.sound.load(AssetPaths.miss__wav);
-		// selectSound = FlxG.sound.load(AssetPaths.select__wav);
-		// winSound = FlxG.sound.load(AssetPaths.win__wav);
-		// combatSound = FlxG.sound.load(AssetPaths.combat__wav);
+		fledSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		hurtSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		loseSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		missSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		selectSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		winSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		combatSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 	}
 
 	/**
