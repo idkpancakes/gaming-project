@@ -129,8 +129,6 @@ class TestState extends FlxState
 		// wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 
 		// add(wep);
-		add(enemyGroup);
-
 		super.create();
 	}
 
@@ -251,7 +249,7 @@ class TestState extends FlxState
 		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 		add(wep);
 
-		// placeEnemies();
+		placeEnemies();
 	}
 
 	// handles the game over state/effect
