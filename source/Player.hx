@@ -17,7 +17,10 @@ class Player extends FlxSprite
 		super(x, y);
 		loadGraphic(AssetPaths.mainCharacterTexture__png, true, 67, 67);
 		solid = true;
-		scale.set(0.75, 0.75);
+
+		scale.set(0.5, 0.5);
+		updateHitbox();
+		// drag.x = drag.y = 800;
 
 		setFacingFlip(LEFT, false, false);
 		setFacingFlip(RIGHT, true, false);

@@ -98,15 +98,19 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
+		// playerSprite = new Player();
+		// playerSprite.loadGraphic(AssetPaths.ditto__png);
+		// playerSprite.setPosition(200, 200);
+		// playerSprite.scale.set(3, 3);
+		// add(playerSprite);
+
 		playerSprite = new Player();
 		playerSprite.loadGraphic(AssetPaths.combatMainCharacterTexture__png, true, 67, 67);
-		playerSprite.setPosition(200, 200);
-		playerSprite.animation.add("idle", [0, 1, 2, 1], 3, true);
+
+		playerSprite.animation.add("idle", [0, 1, 2, 1, 0], 3, true);
 		playerSprite.animation.play("idle");
-
+		playerSprite.setPosition(200, 200);
 		playerSprite.scale.set(1.5, 1.5);
-
-		// playerSprite.scale.set(3, 3);
 		add(playerSprite);
 
 		enemySprite = new Enemy(400, 100, enemy.bType);

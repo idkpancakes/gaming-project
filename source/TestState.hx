@@ -178,7 +178,7 @@ class TestState extends FlxState
 
 	function buildLevels()
 	{
-		for (i in 0...5)
+		for (i in 0...4)
 		{
 			var _tileMap = new FlxTilemap();
 			var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
@@ -207,6 +207,11 @@ class TestState extends FlxState
 
 			levels.push(_tileMap);
 		}
+
+		var _tileMap = new FlxTilemap();
+		_tileMap.loadMapFromCSV(AssetPaths.plantRoom__csv, tileSet, 48, 48);
+
+		levels.insert(3, _tileMap);
 
 		Log.trace(levels);
 	}
