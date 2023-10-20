@@ -1,11 +1,12 @@
 package;
 
+import Weapons.WeaponType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
-	public var weapon:Weapons;
+	public var weapon:Weapons = new Weapons(0, 0, WeaponType.EMPTY);
 
 	var dungeonHealth = 3;
 	var combatHealth = 10;
@@ -122,5 +123,15 @@ class Player extends FlxSprite
 	public function isDead():Bool
 	{
 		return dungeonHealth <= 0 || combatHealth <= 0;
+	}
+
+	override public function clone()
+	{
+		var _player = new Player(this.x, this.y);
+		_player.weapon = this.weapon;
+		_player.combatHealth = this.combatHealth;
+		_player.dungeonHealth = this.dungeonHealth;
+
+		return _player;
 	}
 }

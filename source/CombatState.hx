@@ -4,10 +4,11 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class CombatState extends FlxState
+class CombatState extends FlxSubState
 {
 	var player:Player;
 	var enemy:Enemy;
@@ -38,5 +39,10 @@ class CombatState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (combatHUD.outcome.equals(CombatHUD.Outcome.FINISHED))
+		{
+			close();
+		}
 	}
 }

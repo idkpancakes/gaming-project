@@ -28,6 +28,7 @@ enum Outcome
 	ESCAPE;
 	VICTORY;
 	DEFEAT;
+	FINISHED;
 }
 
 enum Choice // this is where you make differt moves, ie punch, mage hit idk
@@ -219,7 +220,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		this.playerHealth = player.getCombatHealth(); // we set our playerHealth variable to the value that was passed to us
 		this.enemy = enemy; // set our enemySprite object to the one passed to us
 
-		this.player = player;
+		this.player = new Player(player.x, player.y);
+		this.player.weapon = player.weapon;
 
 		updatePlayerHealth();
 
@@ -270,6 +272,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	{
 		active = false;
 		visible = false;
+		outcome = FINISHED;
 	}
 
 	/**
