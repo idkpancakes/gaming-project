@@ -189,6 +189,9 @@ class TestState extends FlxState
 		var combatState = new CombatState(player.clone(), enemy);
 		combatState.closeCallback = function()
 		{
+			if (player.isDead())
+				gameOver();
+
 			enemy.kill();
 			enemyGroup.remove(enemy);
 
@@ -261,31 +264,31 @@ class TestState extends FlxState
 
 		levels.insert(2, _tileMap);
 
-		_tileMap.loadMapFromCSV(AssetPaths.beeRoom__csv, tileSet, 48, 48);
-		_tileMap.screenCenter();
+		// _tileMap.loadMapFromCSV(AssetPaths.beeRoom__csv, tileSet, 48, 48);
+		// _tileMap.screenCenter();
 
-		_tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
-		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
 
-		_tileMap.setTileProperties(FinalTiles.VOID, ANY);
-		_tileMap.setTileProperties(FinalTiles.TORCH, NONE);
-		_tileMap.setTileProperties(FinalTiles.FIRE, NONE);
-		_tileMap.setTileProperties(FinalTiles.CHEST, NONE);
-		_tileMap.setTileProperties(FinalTiles.HEART, NONE);
-		_tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
-		_tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
-		_tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
-		_tileMap.setTileProperties(FinalTiles.ROOM, NONE);
-		_tileMap.setTileProperties(6, NONE);
-		_tileMap.setTileProperties(7, NONE);
+		// _tileMap.setTileProperties(FinalTiles.VOID, ANY);
+		// _tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		// _tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		// _tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+		// _tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+		// _tileMap.setTileProperties(6, NONE);
+		// _tileMap.setTileProperties(7, NONE);
 
-		levels.insert(4, _tileMap);
+		// levels.insert(4, _tileMap);
 
 		Log.trace(levels);
 	}
@@ -332,8 +335,6 @@ class TestState extends FlxState
 		hud = new OverheadUI();
 		add(hud);
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
-
-		cam.target = player;
 	}
 
 	function placePlayer()
@@ -373,14 +374,32 @@ class TestState extends FlxState
 	// handles the game over state/effect
 	function gameOver()
 	{
+		var gameOverState = new GameOver();
+
+		gameOverState.closeCallback = function()
+		{
+			levelID--;
+			FlxG.cameras.remove(cam);
+			loadLevel();
+		}
+
 		openSubState(new GameOver());
 	}
 
 	public function openPauseMenu()
 	{
+		var pauseState = new PauseMenu();
+
 		if (FlxG.keys.pressed.P)
 		{
-			openSubState(new PauseMenu());
+			pauseState.closeCallback = function()
+			{
+				FlxG.cameras.remove(cam);
+				cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+				FlxG.cameras.add(cam);
+				cam.target = player;
+			}
+			openSubState(pauseState);
 		}
 	}
 
