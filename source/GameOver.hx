@@ -51,6 +51,5 @@ class GameOver extends FlxSubState
 	public function clickRetry()
 	{
 		close();
-		// player.setDungeonHealth(3);
 	}
 }

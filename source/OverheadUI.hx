@@ -21,9 +21,6 @@ class OverheadUI extends FlxSpriteGroup
 	var scrollText:FlxText;
 	var magicLogo:FlxSprite;
 
-	public var levelID:Int;
-
-	var lvlCounter:FlxText;
 	var magic:MagicAttack = new MagicAttack(0, 0, NOSCROLL);
 	var weapon:Weapons = new Weapons(0, 0, FIST);
 
@@ -43,9 +40,6 @@ class OverheadUI extends FlxSpriteGroup
 		background.drawRect(0, 0, FlxG.width, 1, FlxColor.WHITE);
 		healthCounter = new FlxText(16, 2, 0, "3 / 3", 16);
 		healthCounter.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
-
-		lvlCounter = new FlxText(520, 2, 0, "5 / 5", 16);
-		lvlCounter.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
 
 		keyCounter = new FlxText(430, 2, 0, ": 0 / 1", 16);
 		keyCounter.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
@@ -68,7 +62,7 @@ class OverheadUI extends FlxSpriteGroup
 		add(weaponText);
 		add(weaponLogo);
 		add(magicLogo);
-		add(lvlCounter);
+
 		add(scrollText);
 		add(keyCounter);
 		add(keyLogo);
@@ -82,8 +76,6 @@ class OverheadUI extends FlxSpriteGroup
 		healthCounter.text = playerHealth + " / 3";
 		weaponLogo.loadGraphic(weapon.graphicPath);
 		magicLogo.loadGraphic(magic.mGraphicPath);
-
-		// lvlCounter.text = levelID + "";
 
 		weaponText.text = weapon.type + "";
 		scrollText.text = magic.type + "";
