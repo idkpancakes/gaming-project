@@ -4,10 +4,11 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class CombatState extends FlxState
+class CombatState extends FlxSubState
 {
 	var player:Player;
 	var enemy:Enemy;
@@ -31,14 +32,19 @@ class CombatState extends FlxState
 
 		combatHUD = new CombatHUD(player, enemy);
 
-		combatHUD.initCombat(player.getDungeonHealth(), enemy);
+		combatHUD.initCombat(player, enemy);
 		add(combatHUD);
-		// text = new flixel.text.FlxText(250, 250, FlxG.width, "Letsgo?", 64);
-		// add(text);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (combatHUD.outcome.equals(CombatHUD.Outcome.FINISHED))
+		{
+			_parentState.openSubState(new GameOver());
+
+			close();
+		}
 	}
 }

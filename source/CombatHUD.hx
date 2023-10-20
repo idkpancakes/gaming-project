@@ -9,12 +9,14 @@ import flixel.FlxSprite;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxRandom;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import haxe.Log;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -28,6 +30,7 @@ enum Outcome
 	ESCAPE;
 	VICTORY;
 	DEFEAT;
+	FINISHED;
 }
 
 enum Choice // this is where you make differt moves, ie punch, mage hit idk
@@ -39,6 +42,7 @@ enum Choice // this is where you make differt moves, ie punch, mage hit idk
 class CombatHUD extends FlxTypedGroup<FlxSprite>
 {
 	// These public variables will be used after combat has finished to help tell us what happened.
+	public var player:Player;
 	public var enemy:Enemy; // we will pass the enemySprite that the playerSprite touched to initialize combat, and this will let us also know which enemySprite to kill, etc.
 	public var playerHealth(default, null):Int; // when combat has finished, we will need to know how much remaining health the playerSprite has
 	public var outcome(default, null):Outcome; // when combat has finished, we will need to know if the playerSprite killed the enemySprite or fled
@@ -53,7 +57,10 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	var enemyMaxHealth:Int;
 	var enemyHealthBar:FlxBar; // This FlxBar will show us the enemySprite's current/max health
 
-	var playerHealthCounter:FlxText; // this will show the playerSprite's current/max health
+	var playerHealthBar:FlxBar;
+	var playerMaxHealth:Int;
+
+	var displayMove:FlxText;
 
 	var damages:Array<FlxText>; // This array will contain 2 FlxText objects which will appear to show damage dealt (or misses)
 
@@ -76,7 +83,10 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 	var screen:FlxSprite;
 
+	var random:FlxRandom;
+
 	var cam:FlxCamera;
+	var center:FlxSprite;
 
 	public function new(player:Player, enemy:Enemy)
 	{
@@ -89,44 +99,69 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		background = new FlxSprite().makeGraphic(630, 480, FlxColor.MAGENTA);
+		background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
+		// background = new FlxSprite().loadGraphic(AssetPaths.bee_boss_bg__jpg);
 
 		add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
+		// playerSprite = new Player();
+		// playerSprite.loadGraphic(AssetPaths.ditto__png);
+		// playerSprite.setPosition(200, 200);
+		// playerSprite.scale.set(3, 3);
+		// add(playerSprite);
 
 		playerSprite = new Player();
-		playerSprite.loadGraphic(AssetPaths.ditto__png);
+		playerSprite.loadGraphic(AssetPaths.combatMainCharacterTexture__png, true, 67, 67);
+
+		playerSprite.animation.add("idle", [0, 1, 2, 1, 0], 3, true);
+		playerSprite.animation.play("idle");
 		playerSprite.setPosition(200, 200);
+		playerSprite.scale.set(1.5, 1.5);
 		add(playerSprite);
 
 		enemySprite = new Enemy(400, 100, enemy.bType);
-
 		enemySprite.setPosition(400, 100);
+
+		if (enemy.bType == MINI)
+			enemySprite.scale.set(.9, .9);
+		else
+			enemySprite.scale.set(1.5, 2);
 		add(enemySprite);
+
+		center = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
+		center.makeGraphic(1, 1, FlxColor.TRANSPARENT);
+		center.alpha = 0;
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
-		cam.target = background;
-		add(background);
+		cam.target = center;
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
 
-		// setup the playerSprite's health display and add it to the group.
-		playerHealthCounter = new FlxText(0, playerSprite.y + playerSprite.height + 2, 0, "3 / 3", 8);
-		playerHealthCounter.alignment = CENTER;
-		playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
-		add(playerHealthCounter);
+		playerHealthBar = new FlxBar(playerSprite.x - 50, playerSprite.y - 60, LEFT_TO_RIGHT, 100, 10);
+		playerHealthBar.createFilledBar(FlxColor.BLACK, FlxColor.RED, true, FlxColor.WHITE);
+		add(playerHealthBar);
 
 		// create and add a FlxBar to show the enemySprite's health. We'll make it Red and Black.
-		enemyHealthBar = new FlxBar(300, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
-		enemyHealthBar.createFilledBar(0xffdc143c, FlxColor.BLACK, true, FlxColor.BLACK);
+		enemyHealthBar = new FlxBar(playerSprite.x + 200, playerSprite.y - 150, LEFT_TO_RIGHT, 100, 10);
+		enemyHealthBar.createFilledBar(FlxColor.BLACK, FlxColor.RED, true, FlxColor.WHITE);
 		add(enemyHealthBar);
+
+		var moveBox = new FlxSprite(0, 300);
+		moveBox.makeGraphic(640, 300, FlxColor.BLACK);
+		moveBox.alpha = 0.5;
+		add(moveBox);
+
+		var divider = new FlxSprite(0, 300);
+		divider.makeGraphic(640, 10, FlxColor.WHITE);
+		divider.alpha = 0.5;
+		add(divider);
 
 		// create our choices and add them to the group.  // here is where we add each option of attack
 		choices = new Map();
-		choices[FIGHT] = new FlxText(50, 300, 85, "FIGHT", 22);
-		choices[MAGIC] = new FlxText(50, 350, 85, "MAGIC", 22);
+		choices[FIGHT] = new FlxText(50, 350, 85, "FIGHT", 22);
+		choices[MAGIC] = new FlxText(50, 400, 85, "MAGIC", 22);
 
 		add(choices[FIGHT]);
 
@@ -139,15 +174,19 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		pointer.visible = false;
 		add(pointer);
 
-		// create our damage texts. We'll make them be white text with a red shadow (so they stand out).
+		displayMove = new FlxText(150, 350, " Attack", 22);
+		displayMove.visible = false;
+		add(displayMove); // create our damage texts. We'll make them be white text with a red shadow (so they stand out).
+
 		damages = new Array<FlxText>();
-		damages.push(new FlxText(0, 0, 40));
-		damages.push(new FlxText(0, 0, 40));
+		damages.push(new FlxText(0, 0, 70));
+		damages.push(new FlxText(0, 0, 70));
 		for (d in damages)
 		{
 			d.color = FlxColor.WHITE;
 			d.setBorderStyle(SHADOW, FlxColor.RED);
-			d.alignment = CENTER;
+			d.setFormat(null, 20, FlxColor.WHITE, FlxTextAlign.CENTER);
+
 			d.visible = false;
 			add(d);
 		}
@@ -172,14 +211,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		visible = false;
 
 		// sounds will be either changed or removed,
-		// fledSound = FlxG.sound.load(AssetPaths.fled__wav);
-		// hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
-		// loseSound = FlxG.sound.load(AssetPaths.lose__wav);
-		// missSound = FlxG.sound.load(AssetPaths.miss__wav);
-		// selectSound = FlxG.sound.load(AssetPaths.select__wav);
-		// winSound = FlxG.sound.load(AssetPaths.win__wav);
-		// combatSound = FlxG.sound.load(AssetPaths.combat__wav);
-
 		fledSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 		hurtSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 		loseSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
@@ -194,7 +225,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	 * @param	playerHealth	The amount of health the playerSprite is starting with
 	 * @param	enemy			This links back to the Enemy we are fighting with so we can get it's health and type (to change our sprite).
 	 */
-	public function initCombat(playerHealth:Int, enemy:Enemy)
+	public function initCombat(player:Player, enemy:Enemy)
 	{
 		screen.drawFrame();
 		var screenPixels = screen.framePixels;
@@ -211,13 +242,17 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			new ColorMatrixFilter([rc, gc, bc, 0, 0, rc, gc, bc, 0, 0, rc, gc, bc, 0, 0, 0, 0, 0, 1, 0]));
 
 		combatSound.play();
-		this.playerHealth = playerHealth; // we set our playerHealth variable to the value that was passed to us
+		this.playerHealth = player.getCombatHealth(); // we set our playerHealth variable to the value that was passed to us
 		this.enemy = enemy; // set our enemySprite object to the one passed to us
 
-		updatePlayerHealth();
+		this.player = new Player(player.x, player.y);
+		this.player.weapon = player.weapon;
+		this.player.magic = player.magic;
 
 		// setup our enemySprite
-		enemyMaxHealth = enemyHealth = Std.int(enemy.health); // each enemySprite will have health based on their type
+		playerMaxHealth = playerHealth;
+		enemyMaxHealth = enemyHealth = Std.int(enemy.getHealth()); // each enemySprite will have health based on their type
+		playerHealthBar.value = 100;
 		enemyHealthBar.value = 100; // the enemySprite's health bar starts at 100%
 		// enemySprite.changeType(enemy.type); // change our enemySprite's image to match their type.
 
@@ -263,15 +298,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	{
 		active = false;
 		visible = false;
-	}
-
-	/**
-	 * This function is called to change the Player's health text on the screen.
-	 */
-	function updatePlayerHealth()
-	{
-		playerHealthCounter.text = playerHealth + " / 3";
-		playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
+		outcome = FINISHED;
 	}
 
 	override public function update(elapsed:Float)
@@ -343,16 +370,20 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				// they have an 85% chance to hit the enemySprite
 				if (FlxG.random.bool(85))
 				{
+					var damage = player.weapon.getDamage();
+
 					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
-					damages[1].text = "1";
+					damages[1].text = damage + "";
+					displayMove.text = "Fight Selected";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
 						onComplete: function(_)
 						{
 							FlxTween.tween(enemySprite, {x: enemySprite.x - 4}, 0.1);
 						}
 					});
+
 					hurtSound.play();
-					enemyHealth--;
+					enemyHealth -= damage;
 					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
 				}
 				else
@@ -382,10 +413,13 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				// if MAGIC was picked...
 				// ...the playerSprite attacks the enemySprite first
 				// they have an 85% chance to hit the enemySprite
-				if (FlxG.random.bool(85))
+				if (FlxG.random.bool(35))
 				{
-					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
-					damages[1].text = "1";
+					var mDamage = player.magic.getMagDamage();
+					displayMove.text = "Magic Selected";
+					mDamage = mDamage * FlxG.random.int(0, 10); // damage = damage * random.int(0, 10);
+
+					damages[1].text = mDamage + "";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
 						onComplete: function(_)
 						{
@@ -393,7 +427,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 						}
 					});
 					hurtSound.play();
-					enemyHealth--;
+					enemyHealth -= mDamage;
 					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
 				}
 				else
@@ -436,9 +470,12 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			FlxG.camera.flash(FlxColor.RED, .2);
 			FlxG.camera.shake(0.01, 0.2);
 			hurtSound.play();
-			damages[0].text = "1";
-			playerHealth--;
-			updatePlayerHealth();
+			damages[0].text = enemy.getAtkDamage() + "";
+
+			playerHealth = playerHealth - enemy.getAtkDamage();
+
+			playerHealthBar.value = (playerHealth / playerMaxHealth) * 100;
+			// updatePlayerHealth();
 		}
 		else
 		{

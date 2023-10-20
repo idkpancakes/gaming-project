@@ -1,13 +1,15 @@
 package;
 
-import Bat.DEnemy.*;
 import CaveDungeonGeneration.CaveDungeonGeneration;
+import Enemy.DEnemy.*;
+import MagicAttack.MagicType;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
 import haxe.Log;
@@ -81,6 +83,10 @@ class TestState extends FlxState
 
 	var player:Player;
 
+	var combatState:CombatState;
+
+	var scroll:MagicAttack;
+
 	var bat1:DungeonEnemy;
 	var wep:Weapons;
 
@@ -89,53 +95,30 @@ class TestState extends FlxState
 
 	var tileMap:FlxTilemap;
 
-	var batGroup:FlxTypedSpriteGroup<Bat>;
-
 	public var hud:OverheadUI;
 
-	var plantMan:Bat;
+	var plantMan:DungeonEnemy;
 	var tileSet = AssetPaths.biggerBoy__png;
 
-	var enemyGroup:FlxTypedSpriteGroup<Bat>;
-  
+	var enemyGroup:FlxTypedGroup<DungeonEnemy>;
+	var key:FlxSprite;
+
 	static public var thorns:Enemy;
 
 	var levels:Array<FlxTilemap> = new Array();
 
+	var levelID = -1;
+
 	override public function create()
 	{
-		enemyGroup = new FlxTypedSpriteGroup<Bat>();
+		enemyGroup = new FlxTypedGroup<DungeonEnemy>();
 
 		var backGround = new FlxSprite();
 		backGround.loadGraphic(AssetPaths.bg_resized__png);
 		add(backGround);
 
 		buildLevels();
-
-		tileMap = levels.pop();
-		tileMap.follow();
-
-		add(tileMap);
-		hud = new OverheadUI();
-		add(hud);
-
-		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
-		player = new Player(startPoint.x, startPoint.y);
-
-		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
-		FlxG.cameras.add(cam);
-		cam.target = player;
-		add(player);
-
-		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
-		add(plantMan);
-
-		hud.setPosition(cam.scroll.x, cam.scroll.y);
-
-		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
-
-		add(wep);
-		add(enemyGroup);
+		loadLevel();
 
 		super.create();
 	}
@@ -145,11 +128,36 @@ class TestState extends FlxState
 		super.update(elapsed);
 
 		// DEBUG!
-		if (FlxG.keys.justPressed.L)
+		if (FlxG.keys.justPressed.L || FlxG.overlap(player, key))
 		{
 			loadLevel();
 		}
 
+		for (enemy in enemyGroup)
+		{
+			if (enemy.bType == MINI || enemy.bType == FINAL)
+			{
+				enemy.bossAttack(player, enemy);
+
+				for (thorn in enemy.getThorns())
+				{
+					if (FlxG.overlap(thorn, player))
+					{
+						thorn.kill();
+						player.setDungeonHealth(player.getDungeonHealth() - 1);
+					}
+				}
+			}
+			else
+			{
+				enemy.attack(player, enemy);
+			}
+
+			FlxG.collide(enemy, tileMap);
+			FlxG.overlap(player, enemy, combatStateSwitch);
+		}
+
+		hud.playerHealth = player.getDungeonHealth();
 		hud.updateHUD();
 		openPauseMenu();
 
@@ -160,34 +168,45 @@ class TestState extends FlxState
 
 		player.charMovement(player);
 		FlxG.collide(player, tileMap);
-		FlxG.collide(batGroup, tileMap);
 
 		if (FlxG.overlap(player, wep) && FlxG.keys.justPressed.SPACE)
 		{
+			player.weapon = wep;
 			hud.setWeapon(wep);
 		}
 
-		// -10 points
-		for (dude in enemyGroup)
+		if (FlxG.overlap(player, scroll) && FlxG.keys.justPressed.SPACE)
 		{
-			dude.attack(player, dude);
-			FlxG.overlap(player, dude, switching);
+			player.magic = scroll;
+			hud.setMagic(scroll);
+		}
+	}
+
+	function combatStateSwitch(player:Player, enemy:DungeonEnemy)
+	{
+		Log.trace(player.clone().magic);
+
+		var combatState = new CombatState(player.clone(), enemy);
+		combatState.closeCallback = function()
+		{
+			if (player.isDead())
+				gameOver();
+
+			enemy.kill();
+			enemyGroup.remove(enemy);
+
+			FlxG.cameras.remove(cam);
+			cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+			FlxG.cameras.add(cam);
+			cam.target = player;
 		}
 
-		// for (thorn in plantMan.getThorns())
-		// {
-		// 	if (FlxG.overlap(player, thorn))
-		// 	{
-		// 		player.setDungeonHealth(player.getDungeonHealth() - 1);
-		// hud.health = player.getDungeonHealth();
-		// 		thorn.kill();
-		// 	}
-		// }
+		openSubState(combatState);
 	}
 
 	function buildLevels()
 	{
-		for (i in 0...5)
+		for (i in 0...3)
 		{
 			var _tileMap = new FlxTilemap();
 			var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
@@ -217,76 +236,249 @@ class TestState extends FlxState
 			levels.push(_tileMap);
 		}
 
+		var _tileMap = new FlxTilemap();
+		_tileMap.loadMapFromCSV(AssetPaths.plantRoom__csv, tileSet, 48, 48);
+
+		_tileMap.screenCenter();
+
+		_tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+		_tileMap.setTileProperties(FinalTiles.VOID, ANY);
+		_tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		_tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		_tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		_tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+		_tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+		_tileMap.setTileProperties(6, NONE);
+		_tileMap.setTileProperties(7, NONE);
+
+		levels.insert(2, _tileMap);
+
+		// _tileMap.loadMapFromCSV(AssetPaths.beeRoom__csv, tileSet, 48, 48);
+		// _tileMap.screenCenter();
+
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		// _tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+		// _tileMap.setTileProperties(FinalTiles.VOID, ANY);
+		// _tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		// _tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		// _tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		// _tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+		// _tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+		// _tileMap.setTileProperties(6, NONE);
+		// _tileMap.setTileProperties(7, NONE);
+
+		// levels.insert(4, _tileMap);
+
 		Log.trace(levels);
 	}
 
 	function loadLevel()
 	{
-		if (levels.length == 0)
+		if (levelID >= levels.length)
+		{
 			return;
-
-		// cleanup!
+		}
 
 		remove(tileMap);
 		remove(hud);
-		remove(player);
 		remove(plantMan); // kill this
-		FlxG.cameras.remove(cam);
+		remove(player);
+		remove(key);
 
-		tileMap = levels.pop();
+		levelID++;
+
+		tileMap = levels[levelID];
 		tileMap.follow();
-
 		add(tileMap);
-		hud = new OverheadUI();
-		add(hud);
 
-		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
-		player = new Player(startPoint.x, startPoint.y);
+		if (player == null)
+			player = new Player();
+
+		key = new FlxSprite();
+		key.loadGraphic(AssetPaths.level_key__png, 20, 20, false);
+
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+		var pos = tileMap.getTileCoordsByIndex(FlxG.random.getObject(roomTiles), false);
+
+		key.setPosition(pos.x, pos.y);
+		add(key);
+
+		placeEnemies();
+		placePlayer();
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
 		cam.target = player;
 		add(player);
 
-		// plantMan = new Bat(startPoint.x + 300, startPoint.y, BEE);
-		// add(plantMan);
-
+		hud = new OverheadUI();
+		add(hud);
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
+	}
 
-		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
-		add(wep);
+	function placePlayer()
+	{
+		var invalidPlacement = true;
 
-		placeEnemies();
+		player.setDungeonHealth(3);
+		player.setCombatHealth(10 + 5 * levelID); // debug
+
+		// hard code placment for mini boss
+		if (levelID == 2)
+		{
+			player.setPosition(5, 180);
+			return;
+		}
+
+		// hard code placement for final boss
+		if (levelID == 4)
+		{
+			player.setPosition(5, 180);
+			return;
+		}
+
+		while (invalidPlacement)
+		{
+			var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
+			player.setPosition(startPoint.x, startPoint.y);
+
+			invalidPlacement = false;
+
+			for (enemy in enemyGroup)
+				if (enemy.inRange(player, enemy))
+					invalidPlacement = true;
+		}
 	}
 
 	// handles the game over state/effect
 	function gameOver()
 	{
-		openSubState(new GameOver());
-	}
+		var gameOverState = new GameOver();
 
-	public function switching(player:Player, enemy:Enemy)
-	{
-		FlxG.switchState(new CombatState(player, enemy));
+		gameOverState.closeCallback = function()
+		{
+			levelID--;
+			FlxG.cameras.remove(cam);
+			loadLevel();
+		}
+
+		openSubState(new GameOver());
 	}
 
 	public function openPauseMenu()
 	{
+		var pauseState = new PauseMenu();
+
 		if (FlxG.keys.pressed.P)
 		{
-			openSubState(new PauseMenu());
+			pauseState.closeCallback = function()
+			{
+				FlxG.cameras.remove(cam);
+				cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+				FlxG.cameras.add(cam);
+				cam.target = player;
+			}
+			openSubState(pauseState);
 		}
 	}
 
 	function placeEnemies(?density:Float = 0.05)
 	{
-		var batTemplate:Bat = new Bat(0, 0, BAT);
+		enemyGroup.kill();
+		remove(enemyGroup);
+		remove(wep);
+		remove(scroll);
 
-		var batGroup = CaveDungeonGeneration.placeEntities(tileMap, density, batTemplate);
-		enemyGroup.clear();
+		enemyGroup = new FlxTypedGroup<DungeonEnemy>();
 
-		for (bat in batGroup)
-			enemyGroup.add(bat);
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+		var randomPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
+
+		switch (levelID)
+		{
+			// Bat level
+			case 0:
+				var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
+				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, batTemplate);
+
+				wep = new Weapons(randomPoint.x, randomPoint.y, BOW);
+				add(wep);
+
+			// Bat Plant Level
+			case 1:
+				var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
+				var plantTemplate:DungeonEnemy = new DungeonEnemy(0, 0, PLANT);
+
+				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, batTemplate);
+
+				for (plant in CaveDungeonGeneration.placeEnemies(tileMap, 0.02, plantTemplate))
+				{
+					enemyGroup.add(plant);
+				}
+
+				scroll = new MagicAttack(randomPoint.x, randomPoint.y, FlxG.random.getObject([MagicType.FIRE, MagicType.WATER]));
+				add(scroll);
+
+			// Plant Boss Level
+			case 2:
+				// mini boss type
+				var plantMiniBoss = new DungeonEnemy(0, 0, MINI);
+
+				// change to a constant, consult cassandra
+				plantMiniBoss.setPosition(450, 150);
+
+				add(plantMiniBoss.getThorns());
+				remove(key);
+
+				enemyGroup.add(plantMiniBoss);
+
+			// Plant Bee Level
+			case 3:
+				var plantTemplate:DungeonEnemy = new DungeonEnemy(0, 0, PLANT);
+				var beeTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BEE);
+
+				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, plantTemplate);
+
+				for (bee in CaveDungeonGeneration.placeEnemies(tileMap, 0.02, beeTemplate))
+				{
+					enemyGroup.add(bee);
+				}
+
+				wep = new Weapons(randomPoint.x, randomPoint.y, GUN);
+				add(wep);
+
+			// Bee Boss Level
+			case 4:
+				var beeBoss = new DungeonEnemy(0, 0, FINAL);
+
+				// change to a constant, consult cassandra
+				var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
+				beeBoss.setPosition(startPoint.x, startPoint.y);
+				enemyGroup.add(beeBoss);
+		}
+
+		add(enemyGroup);
 	}
 }
 /**
