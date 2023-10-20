@@ -203,7 +203,7 @@ class TestState extends FlxState
 
 	function buildLevels()
 	{
-		for (i in 0...4)
+		for (i in 0...3)
 		{
 			var _tileMap = new FlxTilemap();
 			var caveDungeonCSV = CaveDungeonGeneration.generateDungeon(WIDTH, HEIGHT, 15, .45, tileSet);
@@ -261,6 +261,32 @@ class TestState extends FlxState
 
 		levels.insert(2, _tileMap);
 
+		_tileMap.loadMapFromCSV(AssetPaths.beeRoom__csv, tileSet, 48, 48);
+		_tileMap.screenCenter();
+
+		_tileMap.setTileProperties(FinalTiles.WALL_UP, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_RIGHT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_UP_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_UP_RIGHT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_LEFT, ANY);
+		_tileMap.setTileProperties(FinalTiles.WALL_DOWN_RIGHT, ANY);
+
+		_tileMap.setTileProperties(FinalTiles.VOID, ANY);
+		_tileMap.setTileProperties(FinalTiles.TORCH, NONE);
+		_tileMap.setTileProperties(FinalTiles.FIRE, NONE);
+		_tileMap.setTileProperties(FinalTiles.CHEST, NONE);
+		_tileMap.setTileProperties(FinalTiles.HEART, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_0, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_1, NONE);
+		_tileMap.setTileProperties(FinalTiles.FLOOR_2, NONE);
+		_tileMap.setTileProperties(FinalTiles.ROOM, NONE);
+		_tileMap.setTileProperties(6, NONE);
+		_tileMap.setTileProperties(7, NONE);
+
+		levels.insert(4, _tileMap);
+
 		Log.trace(levels);
 	}
 
@@ -317,8 +343,15 @@ class TestState extends FlxState
 		player.setDungeonHealth(3);
 		player.setCombatHealth(10 + 5 * levelID); // debug
 
-		// hard code placment for boss
+		// hard code placment for mini boss
 		if (levelID == 2)
+		{
+			player.setPosition(5, 180);
+			return;
+		}
+
+		// hard code placement for final boss
+		if (levelID == 4)
 		{
 			player.setPosition(5, 180);
 			return;

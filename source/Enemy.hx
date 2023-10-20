@@ -54,6 +54,7 @@ class Enemy extends FlxSprite
 				loadGraphic(AssetPaths.CarnivorousPlantIdle__png);
 				enemyHealth = 30;
 				atkDamage = 8;
+				scale.set(0.5, 0.5);
 
 			case FINAL:
 				loadGraphic(AssetPaths.QueenBeeTexture__png, true, 185, 160);
@@ -62,6 +63,7 @@ class Enemy extends FlxSprite
 				animation.play("idle");
 				enemyHealth = 50;
 				atkDamage = 10;
+				scale.set(0.5, 0.5);
 
 			case BAT:
 				loadGraphic(AssetPaths.batFlappingTexture__png, true, 33, 30);
@@ -73,6 +75,7 @@ class Enemy extends FlxSprite
 				animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
 				enemyHealth = 10;
 				atkDamage = 2;
+			// scale.set(0.5, 0.5);
 
 			case BEE:
 				loadGraphic(AssetPaths.beeFlapTexture__png, true, 40, 43);
@@ -82,6 +85,8 @@ class Enemy extends FlxSprite
 				animation.add("flaping", [0, 1, 2, 3], 4, true);
 				enemyHealth = 15;
 				atkDamage = 3;
+
+				scale.set(0.6, 0.6);
 
 			case PLANT:
 				loadGraphic(AssetPaths.plantMove__png, true, 104, 107);
@@ -98,6 +103,7 @@ class Enemy extends FlxSprite
 						return;
 					animation.play("move");
 				}
+				scale.set(0.5, 0.5);
 
 			case PROJECTILE:
 		}
