@@ -45,10 +45,11 @@ class Weapons extends FlxSprite
 				graphicPath = AssetPaths.sword__png;
 				damage = 8;
 			case MAGIC:
-				loadGraphic(AssetPaths.magicScroll__png);
+				// loadGraphic(AssetPaths.magicScroll__png);
 				damage = 5;
 			case EMPTY:
-				damage = 1;
+				// damage = 1;
+				damage = 999;
 				null;
 		}
 	}

@@ -40,9 +40,9 @@ class CombatState extends FlxSubState
 	{
 		super.update(elapsed);
 
-		if (combatHUD.outcome.equals(CombatHUD.Outcome.NONE) == false)
+		if (combatHUD.outcome.equals(CombatHUD.Outcome.FINISHED))
 		{
-			closeSubState();
+			close();
 		}
 	}
 }

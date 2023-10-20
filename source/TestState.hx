@@ -81,6 +81,8 @@ class TestState extends FlxState
 
 	var player:Player;
 
+	var combatState:CombatState;
+
 	var bat1:DungeonEnemy;
 	var wep:Weapons;
 
@@ -111,24 +113,6 @@ class TestState extends FlxState
 		buildLevels();
 		loadLevel();
 
-		// tileMap = levels.pop();
-		// tileMap.follow();
-
-		// add(tileMap);
-		// hud = new OverheadUI();
-		// add(hud);
-
-		// var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
-		// player = new Player(startPoint.x, startPoint.y);
-
-		// cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
-		// FlxG.cameras.add(cam);
-		// cam.target = player;
-		// add(player);
-
-		// wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
-
-		// add(wep);
 		super.create();
 	}
 
@@ -166,18 +150,25 @@ class TestState extends FlxState
 		for (enemy in enemyGroup)
 		{
 			enemy.attack(player, enemy);
-			FlxG.overlap(player, enemy, startCombatState);
+			FlxG.overlap(player, enemy, combatStateSwitch);
+		}
+	}
+
+	function combatStateSwitch(player:Player, enemy:DungeonEnemy)
+	{
+		var combatState = new CombatState(player.clone(), enemy);
+		combatState.closeCallback = function()
+		{
+			enemy.kill();
+			enemyGroup.remove(enemy);
+
+			FlxG.cameras.remove(cam);
+			cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+			FlxG.cameras.add(cam);
+			cam.target = player;
 		}
 
-		// for (thorn in plantMan.getThorns())
-		// {
-		// 	if (FlxG.overlap(player, thorn))
-		// 	{
-		// 		player.setDungeonHealth(player.getDungeonHealth() - 1);
-		// hud.health = player.getDungeonHealth();
-		// 		thorn.kill();
-		// 	}
-		// }
+		openSubState(combatState);
 	}
 
 	function startCombatState(player:Player, enemy:Enemy)
@@ -225,37 +216,36 @@ class TestState extends FlxState
 		if (levels.length == 0)
 			return;
 
-		// cleanup!
-
 		remove(tileMap);
 		remove(hud);
-		remove(player);
 		remove(plantMan); // kill this
-		FlxG.cameras.remove(cam);
+		remove(player);
 
 		tileMap = levels.pop();
 		tileMap.follow();
-
 		add(tileMap);
-		hud = new OverheadUI();
-		add(hud);
+
+		if (player == null)
+			player = new Player();
 
 		var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
-		player = new Player(startPoint.x, startPoint.y);
+		player.setPosition(startPoint.x, startPoint.y);
+		player.setDungeonHealth(3);
+		player.setCombatHealth(Std.int(10 + 4 * Math.abs(levels.length - 5))); // debug
 
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 		FlxG.cameras.add(cam);
 		cam.target = player;
 		add(player);
 
-		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
-		add(plantMan);
-
+		hud = new OverheadUI();
+		add(hud);
 		hud.setPosition(cam.scroll.x, cam.scroll.y);
 
-		wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
-		add(wep);
+		plantMan = new DungeonEnemy(player.x + 300, player.y, BEE);
+		add(plantMan);
 
+		cam.target = player;
 		placeEnemies();
 	}
 
