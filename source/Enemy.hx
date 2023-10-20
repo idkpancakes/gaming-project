@@ -90,7 +90,7 @@ class Enemy extends FlxSprite
 
 		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-		if (total <= 250)
+		if (total <= 100)
 		{
 			return true;
 		}

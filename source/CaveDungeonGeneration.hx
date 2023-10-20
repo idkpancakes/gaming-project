@@ -279,13 +279,13 @@ class CaveDungeonGeneration
 		return FlxStringUtil.arrayToCSV(tileMap.getData(), width);
 	}
 
-	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, templateSprite:Dynamic)
+	public static function placeEntities(tileMap:FlxTilemap, ratio:Float, templateSprite:FlxSprite)
 	{
 		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
 
 		var itemCount = Math.floor(roomTiles.length * ratio);
 
-		var entities:FlxTypedGroup<Dynamic> = new FlxTypedGroup<Dynamic>();
+		var entities:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
 
 		// technicaly could set the same one twice,
 		for (i in 0...itemCount)
@@ -293,7 +293,26 @@ class CaveDungeonGeneration
 			var pos = tileMap.getTileCoordsByIndex(FlxG.random.getObject(roomTiles), false);
 			var entity = templateSprite.clone();
 			entity.setPosition(pos.x, pos.y);
+			entities.add(entity);
+		}
 
+		return entities;
+	}
+
+	public static function placeEnemies(tileMap:FlxTilemap, ratio:Float, templateSprite:DungeonEnemy)
+	{
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+
+		var itemCount = Math.floor(roomTiles.length * ratio);
+
+		var entities:FlxTypedGroup<DungeonEnemy> = new FlxTypedGroup<DungeonEnemy>();
+
+		// technicaly could set the same one twice,
+		for (i in 0...itemCount)
+		{
+			var pos = tileMap.getTileCoordsByIndex(FlxG.random.getObject(roomTiles), false);
+			var entity = templateSprite.clone();
+			entity.setPosition(pos.x, pos.y);
 			entities.add(entity);
 		}
 
