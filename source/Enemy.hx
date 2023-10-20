@@ -29,6 +29,8 @@ class Enemy extends FlxSprite
 	var range:Int = 200;
 	var enemyHealth:Int;
 
+	var atkDamage:Int;
+
 	public var bType:DEnemy;
 
 	var onSight:FlxTween;
@@ -43,6 +45,7 @@ class Enemy extends FlxSprite
 			case MINI:
 				loadGraphic(AssetPaths.CarnivorousPlantIdle__png);
 				enemyHealth = 30;
+				atkDamage = 8;
 
 			case FINAL:
 				loadGraphic(AssetPaths.QueenBeeTexture__png, true, 185, 160);
@@ -50,6 +53,7 @@ class Enemy extends FlxSprite
 
 				animation.play("idle");
 				enemyHealth = 50;
+				atkDamage = 10;
 
 			case BAT:
 				loadGraphic(AssetPaths.batFlappingTexture__png, true, 33, 30);
@@ -60,6 +64,7 @@ class Enemy extends FlxSprite
 				animation.add("flapping", [4, 1, 2, 3, 2, 1], 6, true);
 				animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
 				enemyHealth = 10;
+				atkDamage = 2;
 
 			case BEE:
 				loadGraphic(AssetPaths.beeFlapTexture__png, true, 40, 43);
@@ -68,6 +73,7 @@ class Enemy extends FlxSprite
 				animation.play("idle");
 				animation.add("flaping", [0, 1, 2, 3], 4, true);
 				enemyHealth = 15;
+				atkDamage = 3;
 
 			case PLANT:
 				loadGraphic(AssetPaths.plantMove__png, true, 104, 107);
@@ -76,6 +82,7 @@ class Enemy extends FlxSprite
 				animation.add("gettingUp", [3, 4, 5, 6], 1, false);
 				animation.add("move", [0, 1, 2], 1, true);
 				enemyHealth = 15;
+				atkDamage = 3;
 
 				animation.finishCallback = function(name:String)
 				{
@@ -114,5 +121,10 @@ class Enemy extends FlxSprite
 	public function cancelTween()
 	{
 		onSight.cancel();
+	}
+
+	public function getAtkDamage()
+	{
+		return atkDamage;
 	}
 }

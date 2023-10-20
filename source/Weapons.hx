@@ -10,6 +10,7 @@ enum WeaponType
 	CHAINSAW;
 	BOW;
 	SWORD;
+	MAGIC;
 	EMPTY;
 }
 
@@ -43,6 +44,9 @@ class Weapons extends FlxSprite
 				loadGraphic(AssetPaths.sword__png);
 				graphicPath = AssetPaths.sword__png;
 				damage = 8;
+			case MAGIC:
+				loadGraphic(AssetPaths.magicScroll__png);
+				damage = 5;
 			case EMPTY:
 				damage = 1;
 				null;

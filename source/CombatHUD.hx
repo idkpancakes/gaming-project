@@ -445,8 +445,9 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			FlxG.camera.flash(FlxColor.RED, .2);
 			FlxG.camera.shake(0.01, 0.2);
 			hurtSound.play();
-			damages[0].text = "1";
-			playerHealth--;
+			damages[0].text = enemy.getAtkDamage() + "";
+
+			playerHealth = playerHealth - enemy.getAtkDamage();
 			updatePlayerHealth();
 		}
 		else
