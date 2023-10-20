@@ -186,11 +186,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		fledSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 		hurtSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
-		loseSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		loseSound = FlxG.sound.load(AssetPaths.MissionFailure__wav);
 		missSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
-		selectSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
-		winSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
-		combatSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		selectSound = FlxG.sound.load(AssetPaths.Selection__wav);
+		winSound = FlxG.sound.load(AssetPaths.Victory__wav);
+		combatSound = FlxG.sound.load(AssetPaths.Gunshot__wav);
 	}
 
 	public function initCombat(player:Player, enemy:Enemy)

@@ -57,6 +57,11 @@ class MenuState extends FlxState
 
 		title = new FlxText(10, 50, 600, "A World Overtaken: Man Versus Swarm");
 		title.setFormat(null, 30, FlxColor.RED, FlxTextAlign.CENTER);
+
+		if (FlxG.sound.music == null) // don't restart the music if it's already playing
+		{
+			FlxG.sound.playMusic(AssetPaths.ES_Epic_Voyage___Dream_Cave__wav, 1, true);
+		}
 	}
 
 	override public function update(elapsed:Float)
@@ -94,7 +99,7 @@ class MenuState extends FlxState
 
 	public function clickPlay()
 	{
-		FlxG.switchState(new TestState());
+		FlxG.switchState(new OverworldState());
 	}
 
 	public function clickRules()
