@@ -63,7 +63,7 @@ class Enemy extends FlxSprite
 				animation.play("idle");
 				animation.add("flapping", [4, 1, 2, 3, 2, 1], 6, true);
 				animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
-				enemyHealth = 3;
+				enemyHealth = 6;
 				atkDamage = 2;
 
 			case BEE:
@@ -103,7 +103,7 @@ class Enemy extends FlxSprite
 
 		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-		if (total <= 100)
+		if (total <= 150)
 		{
 			return true;
 		}

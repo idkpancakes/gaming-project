@@ -55,7 +55,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	var enemyMaxHealth:Int;
 	var enemyHealthBar:FlxBar; // This FlxBar will show us the enemySprite's current/max health
 
-	var playerHealthCounter:FlxText; // this will show the playerSprite's current/max health
+	var playerHealthBar:FlxBar;
+	var playerMaxHealth:Int;
 
 	var damages:Array<FlxText>; // This array will contain 2 FlxText objects which will appear to show damage dealt (or misses)
 
@@ -98,9 +99,14 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
 		playerSprite = new Player();
-		playerSprite.loadGraphic(AssetPaths.ditto__png);
+		playerSprite.loadGraphic(AssetPaths.combatMainCharacterTexture__png, true, 67, 67);
 		playerSprite.setPosition(200, 200);
-		playerSprite.scale.set(3, 3);
+		playerSprite.animation.add("idle", [0, 1, 2, 1], 3, true);
+		playerSprite.animation.play("idle");
+
+		playerSprite.scale.set(1.5, 1.5);
+
+		// playerSprite.scale.set(3, 3);
 		add(playerSprite);
 
 		enemySprite = new Enemy(400, 100, enemy.bType);
@@ -118,23 +124,23 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		// do the same thing for an enemySprite. We'll just use enemySprite type REGULAR for now and change it later.
 
-		// setup the playerSprite's health display and add it to the group.
-		playerHealthCounter = new FlxText(playerSprite.x, playerSprite.y - 50, 0, "3 / 3", 16);
-		playerHealthCounter.alignment = CENTER;
-		// playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
-		add(playerHealthCounter);
+		playerHealthBar = new FlxBar(playerSprite.x - 50, playerSprite.y - 60, LEFT_TO_RIGHT, 100, 10);
+		playerHealthBar.createFilledBar(FlxColor.BLACK, FlxColor.RED, true, FlxColor.WHITE);
+		add(playerHealthBar);
 
 		// create and add a FlxBar to show the enemySprite's health. We'll make it Red and Black.
-		enemyHealthBar = new FlxBar(playerHealthCounter.x + 200, playerHealthCounter.y, LEFT_TO_RIGHT, 100, 10);
-		enemyHealthBar.createFilledBar(FlxColor.PURPLE, FlxColor.BLACK, true, FlxColor.RED);
+		enemyHealthBar = new FlxBar(playerSprite.x + 200, playerSprite.y - 150, LEFT_TO_RIGHT, 100, 10);
+		enemyHealthBar.createFilledBar(FlxColor.BLACK, FlxColor.RED, true, FlxColor.WHITE);
 		add(enemyHealthBar);
 
 		var moveBox = new FlxSprite(0, 300);
 		moveBox.makeGraphic(640, 300, FlxColor.BLACK);
+		moveBox.alpha = 0.5;
 		add(moveBox);
 
 		var divider = new FlxSprite(0, 300);
 		divider.makeGraphic(640, 10, FlxColor.WHITE);
+		divider.alpha = 0.5;
 		add(divider);
 
 		// create our choices and add them to the group.  // here is where we add each option of attack
@@ -155,13 +161,14 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		// create our damage texts. We'll make them be white text with a red shadow (so they stand out).
 		damages = new Array<FlxText>();
-		damages.push(new FlxText(0, 0, 40));
-		damages.push(new FlxText(0, 0, 40));
+		damages.push(new FlxText(0, 0, 70));
+		damages.push(new FlxText(0, 0, 70));
 		for (d in damages)
 		{
 			d.color = FlxColor.WHITE;
 			d.setBorderStyle(SHADOW, FlxColor.RED);
-			d.alignment = CENTER;
+			d.setFormat(null, 20, FlxColor.WHITE, FlxTextAlign.CENTER);
+
 			d.visible = false;
 			add(d);
 		}
@@ -223,10 +230,10 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		this.player = new Player(player.x, player.y);
 		this.player.weapon = player.weapon;
 
-		updatePlayerHealth();
-
 		// setup our enemySprite
+		playerMaxHealth = playerHealth;
 		enemyMaxHealth = enemyHealth = Std.int(enemy.getHealth()); // each enemySprite will have health based on their type
+		playerHealthBar.value = 100;
 		enemyHealthBar.value = 100; // the enemySprite's health bar starts at 100%
 		// enemySprite.changeType(enemy.type); // change our enemySprite's image to match their type.
 
@@ -273,15 +280,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		active = false;
 		visible = false;
 		outcome = FINISHED;
-	}
-
-	/**
-	 * This function is called to change the Player's health text on the screen.
-	 */
-	function updatePlayerHealth()
-	{
-		playerHealthCounter.text = playerHealth + " / 10";
-		playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
 	}
 
 	override public function update(elapsed:Float)
@@ -451,7 +449,9 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			damages[0].text = enemy.getAtkDamage() + "";
 
 			playerHealth = playerHealth - enemy.getAtkDamage();
-			updatePlayerHealth();
+
+			playerHealthBar.value = (playerHealth / playerMaxHealth) * 100;
+			// updatePlayerHealth();
 		}
 		else
 		{

@@ -49,7 +49,7 @@ class Weapons extends FlxSprite
 				damage = 5;
 			case EMPTY:
 				// damage = 1;
-				damage = 999;
+				damage = 4;
 				null;
 		}
 	}
