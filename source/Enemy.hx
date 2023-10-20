@@ -21,6 +21,9 @@ enum DEnemy
 	BEE;
 	BAT;
 	PLANT;
+	// THORN;
+	// STINGER;
+	// ARROW;
 }
 
 class Enemy extends FlxSprite
@@ -63,7 +66,7 @@ class Enemy extends FlxSprite
 				animation.play("idle");
 				animation.add("flapping", [4, 1, 2, 3, 2, 1], 6, true);
 				animation.add("flapRight", [8, 5, 6, 7, 6, 5], 6, true);
-				enemyHealth = 6;
+				enemyHealth = 40;
 				atkDamage = 2;
 
 			case BEE:
@@ -107,10 +110,8 @@ class Enemy extends FlxSprite
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
 
 	public function getHealth()

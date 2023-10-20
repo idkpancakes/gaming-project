@@ -83,6 +83,8 @@ class TestState extends FlxState
 
 	var combatState:CombatState;
 
+	var scroll:MagicAttack;
+
 	var bat1:DungeonEnemy;
 	var wep:Weapons;
 
@@ -143,6 +145,12 @@ class TestState extends FlxState
 			hud.setWeapon(wep);
 		}
 
+		if (FlxG.overlap(player, scroll) && FlxG.keys.justPressed.SPACE)
+		{
+			player.magic = scroll;
+			hud.setMagic(scroll);
+		}
+
 		plantMan.attack(player, plantMan);
 		FlxG.overlap(player, plantMan, combatStateSwitch);
 
@@ -156,6 +164,8 @@ class TestState extends FlxState
 
 	function combatStateSwitch(player:Player, enemy:DungeonEnemy)
 	{
+		Log.trace(player.clone().magic);
+
 		var combatState = new CombatState(player.clone(), enemy);
 		combatState.closeCallback = function()
 		{
@@ -169,11 +179,6 @@ class TestState extends FlxState
 		}
 
 		openSubState(combatState);
-	}
-
-	function startCombatState(player:Player, enemy:Enemy)
-	{
-		openSubState(new CombatState(player, enemy));
 	}
 
 	function buildLevels()
@@ -250,8 +255,14 @@ class TestState extends FlxState
 		plantMan = new DungeonEnemy(player.x + 300, player.y, BEE);
 		add(plantMan);
 
+		wep = new Weapons(player.x - 30, player.y, GUN);
+		add(wep);
+
+		scroll = new MagicAttack(player.x + 30, player.y, FIRE);
+		add(scroll);
+
 		cam.target = player;
-		placeEnemies();
+		// placeEnemies();
 	}
 
 	// handles the game over state/effect
@@ -268,20 +279,17 @@ class TestState extends FlxState
 		}
 	}
 
-	function placeEnemies(?density:Float = 0.05)
-	{
-		remove(enemyGroup);
-		enemyGroup = new FlxTypedGroup<DungeonEnemy>();
-		var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
-		batTemplate.bType = BAT;
-
-		var batGroup = CaveDungeonGeneration.placeEnemies(tileMap, density, batTemplate);
-
-		for (bat in batGroup)
-			enemyGroup.add(bat);
-
-		add(enemyGroup);
-	}
+	// function placeEnemies(?density:Float = 0.05)
+	// {
+	// 	remove(enemyGroup);
+	// 	enemyGroup = new FlxTypedGroup<DungeonEnemy>();
+	// 	var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
+	// 	batTemplate.bType = BAT;
+	// 	var batGroup = CaveDungeonGeneration.placeEnemies(tileMap, density, batTemplate);
+	// 	for (bat in batGroup)
+	// 		enemyGroup.add(bat);
+	// 	add(enemyGroup);
+	// }
 }
 /**
 	*JERRY
