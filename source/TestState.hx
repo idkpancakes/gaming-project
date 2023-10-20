@@ -95,6 +95,7 @@ class TestState extends FlxState
 	var tileSet = AssetPaths.biggerBoy__png;
 
 	var enemyGroup:FlxTypedGroup<DungeonEnemy>;
+
 	static public var thorns:Enemy;
 
 	var levels:Array<FlxTilemap> = new Array();
