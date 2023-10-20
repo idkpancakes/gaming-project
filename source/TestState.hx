@@ -160,11 +160,13 @@ class TestState extends FlxState
 		}
 
 		plantMan.attack(player, plantMan);
+		FlxG.overlap(player, plantMan, startCombatState);
 
 		// -10 points
 		for (enemy in enemyGroup)
 		{
 			enemy.attack(player, enemy);
+			FlxG.overlap(player, enemy, startCombatState);
 		}
 
 		// for (thorn in plantMan.getThorns())
@@ -176,6 +178,11 @@ class TestState extends FlxState
 		// 		thorn.kill();
 		// 	}
 		// }
+	}
+
+	function startCombatState(player:Player, enemy:Enemy)
+	{
+		openSubState(new CombatState(player, enemy));
 	}
 
 	function buildLevels()

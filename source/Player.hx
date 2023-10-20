@@ -1,11 +1,12 @@
 package;
 
+import Weapons.WeaponType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
-	public var weapon:Weapons;
+	public var weapon:Weapons = new Weapons(0, 0, WeaponType.EMPTY);
 
 	var dungeonHealth = 3;
 	var combatHealth = 10;
@@ -14,89 +15,73 @@ class Player extends FlxSprite
 	public function new(x:Float = 0, y:Float = 0)
 	{
 		super(x, y);
-		loadGraphic(AssetPaths.mainCharacterTexture__png, true, 22, 42);
+		loadGraphic(AssetPaths.mainCharacterTexture__png, true, 67, 67);
 		solid = true;
 
-		scale.x = 2;
-		scale.y = 2;
+		scale.x = 0.85;
+		scale.y = 0.85;
+		updateHitbox();
 		// drag.x = drag.y = 800;
 
 		setFacingFlip(LEFT, false, false);
 		setFacingFlip(RIGHT, true, false);
 
-		animation.add("standingLeft", [0], 5, true);
-		animation.add("standingRight", [9], 5, true);
-		animation.add("standingUP", [18], 5, true);
-		animation.add("standingDown", [21], 5, true);
-
-		animation.add("runLeft", [1, 2], 5, true);
-		animation.add("runRight", [10, 11], 5, true);
-
-		animation.add("runUp", [18, 19], 5, true);
-		animation.add("crouchUp", [20], 5, true);
-		animation.add("runDown", [21, 22], 5, true);
-
-		animation.add("attackLeft", [4, 5], 5, true);
-		animation.add("attackRight", [13, 14], 5, true);
-
-		animation.add("hitLeft", [6], 5, true);
-		animation.add("hitRight", [15], 5, true);
-
-		animation.add("crouchLeft", [7], 5, true);
-		animation.add("crouchRight", [16], 5, true);
-
-		animation.add("deadLeft", [8], 5, true);
-		animation.add("deadRight", [17], 5, true);
+		animation.add("d_idle", [0]);
+		animation.add("lr_idle", [5]);
+		animation.add("u_idle", [11]);
+		animation.add("d_walk", [1, 2, 3, 4], 4);
+		animation.add("lr_walk", [5, 6, 7, 8, 9, 10], 6);
+		animation.add("u_walk", [12, 13, 14, 15], 4);
 	}
 
-	public function charMovement(sprite:Player)
+	public function charMovement(player:FlxSprite)
 	{
 		if (FlxG.keys.pressed.D) // moving sprite to the right when D is pressed
 		{
-			sprite.animation.play("runLeft");
-			sprite.velocity.x = 100;
+			player.animation.play("lr_walk");
+			player.velocity.x = 100;
 		}
 		if (FlxG.keys.justReleased.D) // stopping movement once it is released
 		{
-			sprite.animation.play("standingLeft");
-			sprite.velocity.x = 0;
+			player.animation.play("lr_idle");
+			player.velocity.x = 0;
 		}
 		if (FlxG.keys.pressed.A) // moving sprite move left when A is pressed
 		{
-			sprite.animation.play("runLeft");
-			sprite.velocity.x = -100;
+			player.animation.play("lr_walk");
+			player.velocity.x = -100;
 		}
 		if (FlxG.keys.justReleased.A) // stopping movement once A is released
 		{
-			sprite.animation.play("standingLeft");
-			sprite.velocity.x = 0;
+			player.animation.play("lr_idle");
+			player.velocity.x = 0;
 		}
 
 		if (FlxG.keys.pressed.W) // moving sprite up when W is pressed
 		{
-			sprite.animation.play("runUp");
-			sprite.velocity.y = -100;
+			player.animation.play("u_walk");
+			player.velocity.y = -100;
 		}
 		if (FlxG.keys.justReleased.W) // stopping movement once it is released
 		{
-			sprite.animation.play("standingUP");
-			sprite.velocity.y = 0;
+			player.animation.play("u_idle");
+			player.velocity.y = 0;
 		}
 		if (FlxG.keys.pressed.S) // moving sprite down when S is pressed
 		{
-			sprite.animation.play("runDown");
-			sprite.velocity.y = 200;
+			player.animation.play("d_walk");
+			player.velocity.y = 200;
 		}
 		if (FlxG.keys.justReleased.S) // stopping movement once A is released
 		{
-			sprite.animation.play("standingDown");
-			sprite.velocity.y = 0;
+			player.animation.play("d_idle");
+			player.velocity.y = 0;
 		}
 
-		if (sprite.velocity.x > 0)
-			sprite.facing = RIGHT;
+		if (player.velocity.x > 0)
+			player.facing = RIGHT;
 		else
-			sprite.facing = LEFT;
+			player.facing = LEFT;
 	}
 
 	public function getDungeonHealth():Int

@@ -1,156 +1,140 @@
 {"frames": [
 
 {
-	"filename": "00_StillCharacter.png",
-	"frame": {"x":0,"y":0,"w":22,"h":42},
+	"filename": "00_mainCharacterWalkDown.png",
+	"frame": {"x":0,"y":0,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":22,"h":42},
-	"sourceSize": {"w":22,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "01_WalkLeft.png",
-	"frame": {"x":22,"y":0,"w":28,"h":39},
+	"filename": "01_mainCharacterWalkDown.png",
+	"frame": {"x":67,"y":0,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":39},
-	"sourceSize": {"w":28,"h":39}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "02_WalkLeft.png",
-	"frame": {"x":50,"y":0,"w":21,"h":42},
+	"filename": "02_mainCharacterWalkDown.png",
+	"frame": {"x":134,"y":0,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":42},
-	"sourceSize": {"w":21,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "03_JumpLeft.png",
-	"frame": {"x":71,"y":0,"w":29,"h":42},
+	"filename": "03_mainCharacterWalkDown.png",
+	"frame": {"x":0,"y":67,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
-	"sourceSize": {"w":29,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "04_AttackLeft.png",
-	"frame": {"x":100,"y":0,"w":27,"h":35},
+	"filename": "04_mainCharacterWalkDown.png",
+	"frame": {"x":67,"y":67,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":35},
-	"sourceSize": {"w":27,"h":35}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "05_AttackLeftfinal.png",
-	"frame": {"x":127,"y":0,"w":34,"h":37},
+	"filename": "05_mainCharacterWalkRight.png",
+	"frame": {"x":134,"y":67,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":37},
-	"sourceSize": {"w":34,"h":37}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "06_HitLeft.png",
-	"frame": {"x":161,"y":0,"w":26,"h":37},
+	"filename": "06_mainCharacterWalkRight.png",
+	"frame": {"x":0,"y":134,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":37},
-	"sourceSize": {"w":26,"h":37}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "07_CrouchLeft.png",
-	"frame": {"x":187,"y":0,"w":23,"h":42},
+	"filename": "07_mainCharacterWalkRight.png",
+	"frame": {"x":67,"y":134,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":42},
-	"sourceSize": {"w":23,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "08_DeadLeft.png",
-	"frame": {"x":210,"y":0,"w":31,"h":42},
+	"filename": "08_mainCharacterWalkRight.png",
+	"frame": {"x":134,"y":134,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":31,"h":42},
-	"sourceSize": {"w":31,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "09_StillCharacterRight.png",
-	"frame": {"x":241,"y":0,"w":22,"h":42},
+	"filename": "09_mainCharacterWalkRight.png",
+	"frame": {"x":0,"y":201,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":22,"h":42},
-	"sourceSize": {"w":22,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "10_WalkRight.png",
-	"frame": {"x":263,"y":0,"w":28,"h":39},
+	"filename": "10_mainCharacterWalkRight.png",
+	"frame": {"x":67,"y":201,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":39},
-	"sourceSize": {"w":28,"h":39}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "11_WalkRight.png",
-	"frame": {"x":291,"y":0,"w":28,"h":39},
+	"filename": "11_mainCharacterWalkUp.png",
+	"frame": {"x":134,"y":201,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":39},
-	"sourceSize": {"w":28,"h":39}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "12_JumpRight.png",
-	"frame": {"x":319,"y":0,"w":29,"h":42},
+	"filename": "12_mainCharacterWalkUp.png",
+	"frame": {"x":0,"y":268,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
-	"sourceSize": {"w":29,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "13_AttackRight.png",
-	"frame": {"x":348,"y":0,"w":27,"h":35},
+	"filename": "13_mainCharacterWalkUp.png",
+	"frame": {"x":67,"y":268,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":35},
-	"sourceSize": {"w":27,"h":35}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "14_AttackRightfinal.png",
-	"frame": {"x":375,"y":0,"w":34,"h":37},
+	"filename": "14_mainCharacterWalkUp.png",
+	"frame": {"x":134,"y":268,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":37},
-	"sourceSize": {"w":34,"h":37}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 },
 {
-	"filename": "15_HitRight.png",
-	"frame": {"x":409,"y":0,"w":26,"h":37},
+	"filename": "15_mainCharacterWalkUp.png",
+	"frame": {"x":0,"y":335,"w":67,"h":67},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":37},
-	"sourceSize": {"w":26,"h":37}
-},
-{
-	"filename": "16_CrouchRight.png",
-	"frame": {"x":435,"y":0,"w":23,"h":42},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":42},
-	"sourceSize": {"w":23,"h":42}
-},
-{
-	"filename": "17_DeadRight.png",
-	"frame": {"x":458,"y":0,"w":31,"h":42},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":31,"h":42},
-	"sourceSize": {"w":31,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":67},
+	"sourceSize": {"w":67,"h":67}
 }],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "mainCharacterTexture.png",
 	"format": "RGBA8888",
-	"size": {"w":489,"h":42},
+	"size": {"w":201,"h":402},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:6a9901981cebba2a8e32c755615fdad1:eec6ff31b56188b3be59135641a7936f:37f54e18fc029dd6454fe06e0f391993$"
+	"smartupdate": "$TexturePacker:SmartUpdate:165933c2a1e88d182a325ac52001bdec:292a69f487e31b8cf98c26a822f2792d:37f54e18fc029dd6454fe06e0f391993$"
 }
 }
