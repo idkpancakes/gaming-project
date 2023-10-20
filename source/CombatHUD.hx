@@ -99,7 +99,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(waveSprite);
 
 		// first, create our background. Make a black square, then draw borders onto it in white. Add it to our group.
-		background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
+		// background = new FlxSprite().loadGraphic(AssetPaths.combatBack__png);
+		background = new FlxSprite().loadGraphic(AssetPaths.bee_boss_bg__jpg);
 
 		add(background);
 
@@ -121,7 +122,11 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 		enemySprite = new Enemy(400, 100, enemy.bType);
 		enemySprite.setPosition(400, 100);
-		enemySprite.scale.set(1.5, 2);
+
+		if (enemy.bType == MINI)
+			enemySprite.scale.set(.9, .9);
+		else
+			enemySprite.scale.set(1.5, 2);
 		add(enemySprite);
 
 		center = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
@@ -411,7 +416,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				if (FlxG.random.bool(35))
 				{
 					var mDamage = player.magic.getMagDamage();
-					mDamage = mDamage * random.int(0, 10); // damage = damage * random.int(0, 10);
+					mDamage = mDamage * FlxG.random.int(0, 10); // damage = damage * random.int(0, 10);
 
 					damages[1].text = mDamage + "";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {

@@ -24,6 +24,13 @@ enum DEnemy
 	PROJECTILE;
 }
 
+enum ArrowType
+{
+	THORN;
+	STINGER;
+	ARROW;
+}
+
 class Enemy extends FlxSprite
 {
 	var inCombat:Bool = false;
@@ -107,6 +114,21 @@ class Enemy extends FlxSprite
 		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
 		if (total <= 150)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	public function bossInRange(player:Player, enemy:FlxSprite):Bool
+	{
+		var distanceX:Float = player.x - enemy.x;
+		var distanceY:Float = player.y - enemy.y;
+
+		var total = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+		if (total <= 350)
 		{
 			return true;
 		}
