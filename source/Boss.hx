@@ -1,15 +1,20 @@
 package;
 
-import Enemy.DEnemy;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import haxe.Timer;
 
+enum BossType
+{
+	MINI;
+	FINAL;
+}
+
 class Boss extends Enemy
 {
-	// var bType:BossType;
+	var bType:BossType;
 	var thorn:Projectiles;
 	var thornTimer:Timer;
 	var thornMax:Int = 10;
@@ -17,9 +22,25 @@ class Boss extends Enemy
 
 	public var thorns:FlxTypedGroup<Projectiles> = new FlxTypedGroup<Projectiles>();
 
-	public function new(x:Float, y:Float, type:DEnemy)
+	public function new(x:Float, y:Float, type:BossType)
 	{
-		super(x, y, type);
+		super(x, y);
+		bType = type;
+
+		switch (type)
+		{
+			case MINI:
+				loadGraphic(AssetPaths.CarnivorousPlantIdle__png);
+
+			case FINAL:
+				loadGraphic(AssetPaths.QueenBeeTexture__png, true, 185, 160);
+				animation.add("idle", [0, 1, 2, 3], 5, true);
+
+				animation.play("idle");
+		}
+
+		scale.set(0.5, 0.5);
+		updateHitbox();
 
 		thorns = new FlxTypedGroup<Projectiles>();
 
