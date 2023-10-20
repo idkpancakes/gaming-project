@@ -107,7 +107,7 @@ class TestState extends FlxState
 
 	var levels:Array<FlxTilemap> = new Array();
 
-	var levelID = 1;
+	var levelID = -1;
 
 	override public function create()
 	{
@@ -143,8 +143,8 @@ class TestState extends FlxState
 				{
 					if (FlxG.overlap(thorn, player))
 					{
-						// thorn.kill();
-						// player.setDungeonHealth(player.getDungeonHealth() - 1);
+						thorn.kill();
+						player.setDungeonHealth(player.getDungeonHealth() - 1);
 					}
 				}
 			}
