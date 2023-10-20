@@ -126,9 +126,6 @@ class TestState extends FlxState
 		// cam.target = player;
 		// add(player);
 
-		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
-		add(plantMan);
-
 		// wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 
 		// add(wep);
@@ -160,6 +157,7 @@ class TestState extends FlxState
 
 		if (FlxG.overlap(player, wep) && FlxG.keys.justPressed.SPACE)
 		{
+			player.weapon = wep;
 			hud.setWeapon(wep);
 		}
 
