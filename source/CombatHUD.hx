@@ -39,6 +39,7 @@ enum Choice // this is where you make differt moves, ie punch, mage hit idk
 class CombatHUD extends FlxTypedGroup<FlxSprite>
 {
 	// These public variables will be used after combat has finished to help tell us what happened.
+	public var player:Player;
 	public var enemy:Enemy; // we will pass the enemySprite that the playerSprite touched to initialize combat, and this will let us also know which enemySprite to kill, etc.
 	public var playerHealth(default, null):Int; // when combat has finished, we will need to know how much remaining health the playerSprite has
 	public var outcome(default, null):Outcome; // when combat has finished, we will need to know if the playerSprite killed the enemySprite or fled
@@ -95,7 +96,6 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(background);
 
 		// next, make a 'dummy' playerSprite that looks like our playerSprite (but can't move) and add it.
-
 		playerSprite = new Player();
 		playerSprite.loadGraphic(AssetPaths.ditto__png);
 		playerSprite.setPosition(200, 200);
@@ -124,7 +124,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(playerHealthCounter);
 
 		// create and add a FlxBar to show the enemySprite's health. We'll make it Red and Black.
-		enemyHealthBar = new FlxBar(playerHealthCounter.x + 200, playerHealthCounter.y, LEFT_TO_RIGHT, 20, 10);
+		enemyHealthBar = new FlxBar(playerHealthCounter.x + 200, playerHealthCounter.y, LEFT_TO_RIGHT, 100, 10);
 		enemyHealthBar.createFilledBar(FlxColor.PURPLE, FlxColor.BLACK, true, FlxColor.RED);
 		add(enemyHealthBar);
 
@@ -185,13 +185,13 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		visible = false;
 
 		// sounds will be either changed or removed,
-		// fledSound = FlxG.sound.load(AssetPaths.fled__wav);
-		// hurtSound = FlxG.sound.load(AssetPaths.hurt__wav);
-		// loseSound = FlxG.sound.load(AssetPaths.lose__wav);
-		// missSound = FlxG.sound.load(AssetPaths.miss__wav);
-		// selectSound = FlxG.sound.load(AssetPaths.select__wav);
-		// winSound = FlxG.sound.load(AssetPaths.win__wav);
-		// combatSound = FlxG.sound.load(AssetPaths.combat__wav);
+		fledSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		hurtSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		loseSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		missSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		selectSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		winSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
+		combatSound = FlxG.sound.load(AssetPaths.debug_sound__wav);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	 * @param	playerHealth	The amount of health the playerSprite is starting with
 	 * @param	enemy			This links back to the Enemy we are fighting with so we can get it's health and type (to change our sprite).
 	 */
-	public function initCombat(playerHealth:Int, enemy:Enemy)
+	public function initCombat(player:Player, enemy:Enemy)
 	{
 		screen.drawFrame();
 		var screenPixels = screen.framePixels;
@@ -216,13 +216,15 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 			new ColorMatrixFilter([rc, gc, bc, 0, 0, rc, gc, bc, 0, 0, rc, gc, bc, 0, 0, 0, 0, 0, 1, 0]));
 
 		combatSound.play();
-		this.playerHealth = playerHealth; // we set our playerHealth variable to the value that was passed to us
+		this.playerHealth = player.getCombatHealth(); // we set our playerHealth variable to the value that was passed to us
 		this.enemy = enemy; // set our enemySprite object to the one passed to us
+
+		this.player = player;
 
 		updatePlayerHealth();
 
 		// setup our enemySprite
-		enemyMaxHealth = enemyHealth = Std.int(enemy.health); // each enemySprite will have health based on their type
+		enemyMaxHealth = enemyHealth = Std.int(enemy.getHealth()); // each enemySprite will have health based on their type
 		enemyHealthBar.value = 100; // the enemySprite's health bar starts at 100%
 		// enemySprite.changeType(enemy.type); // change our enemySprite's image to match their type.
 
@@ -275,7 +277,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 	 */
 	function updatePlayerHealth()
 	{
-		playerHealthCounter.text = playerHealth + " / 3";
+		playerHealthCounter.text = playerHealth + " / 10";
 		playerHealthCounter.x = playerSprite.x + 4 - (playerHealthCounter.width / 2);
 	}
 
@@ -348,8 +350,10 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 				// they have an 85% chance to hit the enemySprite
 				if (FlxG.random.bool(85))
 				{
+					var damage = player.weapon.getDamage();
+
 					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
-					damages[1].text = "1";
+					damages[1].text = damage + "";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
 						onComplete: function(_)
 						{
@@ -357,7 +361,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 						}
 					});
 					hurtSound.play();
-					enemyHealth--;
+					enemyHealth -= damage;
 					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
 				}
 				else
