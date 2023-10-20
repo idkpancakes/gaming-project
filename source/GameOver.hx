@@ -45,7 +45,6 @@ class GameOver extends FlxSubState
 
 	public function clickRestart()
 	{
-		player.setDungeonHealth(3);
 		FlxG.switchState(new MenuState());
 	}
 

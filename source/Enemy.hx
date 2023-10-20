@@ -21,9 +21,7 @@ enum DEnemy
 	BEE;
 	BAT;
 	PLANT;
-	// THORN;
-	// STINGER;
-	// ARROW;
+	PROJECTILE;
 }
 
 class Enemy extends FlxSprite
@@ -93,6 +91,8 @@ class Enemy extends FlxSprite
 						return;
 					animation.play("move");
 				}
+
+			case PROJECTILE:
 		}
 
 		scale.set(0.5, 0.5);
