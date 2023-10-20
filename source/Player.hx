@@ -35,6 +35,8 @@ class Player extends FlxSprite
 
 	public function charMovement(player:FlxSprite)
 	{
+		player.velocity.set(0, 0);
+
 		if (FlxG.keys.pressed.D) // moving sprite to the right when D is pressed
 		{
 			player.animation.play("lr_walk");
