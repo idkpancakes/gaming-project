@@ -16,7 +16,7 @@ class Projectiles extends Enemy
 
 	public function new(x:Float, y:Float, type:ArrowType)
 	{
-		super(x, y);
+		super(x, y, type);
 		pType = type;
 
 		var graphic = if (pType == THORN) AssetPaths.Thorns__png else if (pType == STINGER) AssetPaths.Thorns__png else AssetPaths.Arrows_pack__png;

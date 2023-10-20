@@ -5,9 +5,10 @@ import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
-	var weapon:Weapons;
+	public var weapon:Weapons;
 
 	var dungeonHealth = 3;
+	var combatHealth = 10;
 
 	// static inline var SPEED:Float = 100;
 	public function new(x:Float = 0, y:Float = 0)
@@ -108,8 +109,18 @@ class Player extends FlxSprite
 		dungeonHealth = newHealth;
 	}
 
+	public function getCombatHealth():Int
+	{
+		return combatHealth;
+	}
+
+	public function setCombatHealth(newHealth:Int)
+	{
+		combatHealth = newHealth;
+	}
+
 	public function isDead():Bool
 	{
-		return dungeonHealth <= 0;
+		return dungeonHealth <= 0 || combatHealth <= 0;
 	}
 }

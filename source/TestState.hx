@@ -126,7 +126,8 @@ class TestState extends FlxState
 		// cam.target = player;
 		// add(player);
 
-		// hud.setPosition(cam.scroll.x, cam.scroll.y);
+		plantMan = new DungeonEnemy(startPoint.x + 300, startPoint.y, BEE);
+		add(plantMan);
 
 		// wep = new Weapons(startPoint.x + 20, startPoint.y + 20, GUN);
 

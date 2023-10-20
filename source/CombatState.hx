@@ -31,10 +31,8 @@ class CombatState extends FlxState
 
 		combatHUD = new CombatHUD(player, enemy);
 
-		combatHUD.initCombat(player.getDungeonHealth(), enemy);
+		combatHUD.initCombat(player, enemy);
 		add(combatHUD);
-		// text = new flixel.text.FlxText(250, 250, FlxG.width, "Letsgo?", 64);
-		// add(text);
 	}
 
 	override public function update(elapsed:Float)
