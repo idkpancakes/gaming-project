@@ -170,7 +170,8 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 		add(pointer);
 
 		displayMove = new FlxText(50, 350, " Attack", 22);
-		// add() // create our damage texts. We'll make them be white text with a red shadow (so they stand out).
+		displayMove.visible = false;
+		add(displayMove); // create our damage texts. We'll make them be white text with a red shadow (so they stand out).
 
 		damages = new Array<FlxText>();
 		damages.push(new FlxText(0, 0, 70));
@@ -368,12 +369,14 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
 
 					// if they hit, deal 1 damage to the enemySprite, and setup our damage indicator
 					damages[1].text = damage + "";
+					displayMove.text = "Fight Selected";
 					FlxTween.tween(enemySprite, {x: enemySprite.x + 4}, 0.1, {
 						onComplete: function(_)
 						{
 							FlxTween.tween(enemySprite, {x: enemySprite.x - 4}, 0.1);
 						}
 					});
+
 					hurtSound.play();
 					enemyHealth -= damage;
 					enemyHealthBar.value = (enemyHealth / enemyMaxHealth) * 100; // change the enemySprite's health bar
