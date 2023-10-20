@@ -100,7 +100,6 @@ class MenuState extends FlxState
 	public function clickRules()
 	{
 		openSubState(new RulesState());
-		// FlxG.switchState(new RulesState());
 	}
 
 	public function clickOptions()
