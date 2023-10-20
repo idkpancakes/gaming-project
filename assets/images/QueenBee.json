@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "00_QueenBeeIdle.png",
+	"frame": {"x":0,"y":0,"w":185,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":160},
+	"sourceSize": {"w":185,"h":160}
+},
+{
+	"filename": "01_QueenBeeIdle.png",
+	"frame": {"x":185,"y":0,"w":187,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":160},
+	"sourceSize": {"w":187,"h":160}
+},
+{
+	"filename": "02_QueenBeeIdle.png",
+	"frame": {"x":372,"y":0,"w":186,"h":159},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":186,"h":159},
+	"sourceSize": {"w":186,"h":159}
+},
+{
+	"filename": "03_QueenBeeIdle.png",
+	"frame": {"x":558,"y":0,"w":187,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":187,"h":160},
+	"sourceSize": {"w":187,"h":160}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "QueenBeeTexture.png",
+	"format": "RGBA8888",
+	"size": {"w":745,"h":160},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2f2f382b26058d9bbfbd5cc14873a1d7:dff588c8450adf3fcce9d3be1ba5924b:690730490187c9c4f43a966302c40e6a$"
+}
+}
