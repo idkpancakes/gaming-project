@@ -2,6 +2,7 @@ package;
 
 import CaveDungeonGeneration.CaveDungeonGeneration;
 import Enemy.DEnemy.*;
+import MagicAttack.MagicType;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -105,6 +106,7 @@ class TestState extends FlxState
 	static public var thorns:Enemy;
 
 	var levels:Array<FlxTilemap> = new Array();
+
 	var levelID = 1;
 
 	override public function create()
@@ -141,8 +143,8 @@ class TestState extends FlxState
 				{
 					if (FlxG.overlap(thorn, player))
 					{
-						thorn.kill();
-						player.setDungeonHealth(player.getDungeonHealth() - 1);
+						// thorn.kill();
+						// player.setDungeonHealth(player.getDungeonHealth() - 1);
 					}
 				}
 			}
@@ -351,7 +353,13 @@ class TestState extends FlxState
 	{
 		enemyGroup.kill();
 		remove(enemyGroup);
+		remove(wep);
+		remove(scroll);
+
 		enemyGroup = new FlxTypedGroup<DungeonEnemy>();
+
+		var roomTiles = tileMap.getTileInstances(FinalTiles.ROOM);
+		var randomPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
 
 		switch (levelID)
 		{
@@ -359,6 +367,9 @@ class TestState extends FlxState
 			case 0:
 				var batTemplate:DungeonEnemy = new DungeonEnemy(0, 0, BAT);
 				enemyGroup = CaveDungeonGeneration.placeEnemies(tileMap, 0.02, batTemplate);
+
+				wep = new Weapons(randomPoint.x, randomPoint.y, BOW);
+				add(wep);
 
 			// Bat Plant Level
 			case 1:
@@ -372,16 +383,18 @@ class TestState extends FlxState
 					enemyGroup.add(plant);
 				}
 
+				scroll = new MagicAttack(randomPoint.x, randomPoint.y, FlxG.random.getObject([MagicType.FIRE, MagicType.WATER]));
+				add(scroll);
+
 			// Plant Boss Level
 			case 2:
 				// mini boss type
-				var plantMiniBoss = new DungeonEnemy(0, 0, MINI);
+				var plantMiniBoss = new DungeonEnemy(0, 0, FINAL);
 
 				// change to a constant, consult cassandra
-				var startPoint = tileMap.getTileCoordsByIndex(FlxG.random.getObject(tileMap.getTileInstances(ROOM)), false);
 				plantMiniBoss.setPosition(450, 150);
+
 				add(plantMiniBoss.getThorns());
-				key.setPosition(plantMiniBoss.getGraphicMidpoint().x, plantMiniBoss.getGraphicMidpoint().y);
 				remove(key);
 
 				enemyGroup.add(plantMiniBoss);
@@ -397,6 +410,9 @@ class TestState extends FlxState
 				{
 					enemyGroup.add(bee);
 				}
+
+				wep = new Weapons(randomPoint.x, randomPoint.y, GUN);
+				add(wep);
 
 			// Bee Boss Level
 			case 4:

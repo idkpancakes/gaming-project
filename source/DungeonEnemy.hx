@@ -1,9 +1,11 @@
 package;
 
+import Enemy.ArrowType;
 import Enemy.DEnemy;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxPoint;
 import flixel.path.FlxPath;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
@@ -28,7 +30,7 @@ class DungeonEnemy extends Enemy
 
 		thorns = new FlxTypedGroup<Projectiles>();
 
-		thorn = new Projectiles(x, y, THORN);
+		thorn = new Projectiles(x, y, ArrowType.THORN);
 	}
 
 	public function attack(player:Player, enemy:DungeonEnemy)
@@ -75,23 +77,38 @@ class DungeonEnemy extends Enemy
 
 	public function bossAttack(player:Player, enemy:Enemy)
 	{
-		if (thornTimer != null)
+		if (bossInRange(player, enemy))
 		{
-			return;
-		}
-		thornTimer = new Timer(1000);
-		thornTimer.run = function()
-		{
-			var rand = FlxG.random.int(0, Math.floor(this.height));
-			var thorn = new Projectiles(x, y + rand, THORN);
-			thorns.add(thorn);
-			// thorn.solid = true;
-			thorn.velocity.x = -200;
-			thornCount++;
-
-			if (thornCount >= thornMax)
+			if (thornTimer != null)
 			{
-				thornTimer.stop();
+				return;
+			}
+			thornTimer = new Timer(750);
+			thornTimer.run = function()
+			{
+				var rand = FlxG.random.int(0, Math.floor(this.height));
+				var thorn = new Projectiles(x, y + rand, ArrowType.STINGER);
+				thorns.add(thorn);
+				// thorn.solid = true;
+
+				var playerPos = player.getMidpoint();
+				var thornPos = thorn.getMidpoint();
+
+				var vector = playerPos.subtractNew(thornPos);
+				vector = vector.normalize();
+
+				thorn.angle = thornPos.degreesFrom(playerPos);
+				thorn.velocity.x = vector.x * 200;
+				thorn.velocity.y = vector.y * 200;
+
+				// un comment to disable constant shooting
+
+				// thornCount++;
+
+				// if (thornCount >= thornMax)
+				// {
+				// 	thornTimer.stop();
+				// }
 			}
 		}
 	}
@@ -103,10 +120,11 @@ class DungeonEnemy extends Enemy
 
 	override public function destroy()
 	{
-		super.destroy();
-
 		if (thornTimer != null)
 			thornTimer.stop();
+		thorns.kill();
+
+		super.destroy();
 	}
 
 	public function getType()
