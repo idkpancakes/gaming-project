@@ -42,7 +42,7 @@ class CombatState extends FlxSubState
 
 		if (combatHUD.outcome.equals(CombatHUD.Outcome.FINISHED))
 		{
-			_parentState.openSubState(new GameOver());
+			// _parentState.openSubState(new GameOver());
 
 			close();
 		}
