@@ -45,7 +45,6 @@ class Weapons extends FlxSprite
 				damage = 8;
 			case FIST:
 				damage = 1;
-				// damage = 4;
 				null;
 		}
 	}

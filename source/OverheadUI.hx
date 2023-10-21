@@ -21,8 +21,6 @@ class OverheadUI extends FlxSpriteGroup
 	var scrollText:FlxText;
 	var magicLogo:FlxSprite;
 
-	public var levelID:Int;
-
 	var magic:MagicAttack = new MagicAttack(0, 0, NOSCROLL);
 	var weapon:Weapons = new Weapons(0, 0, FIST);
 
@@ -77,8 +75,6 @@ class OverheadUI extends FlxSpriteGroup
 		healthCounter.text = playerHealth + " / 3";
 		weaponLogo.loadGraphic(weapon.graphicPath);
 		magicLogo.loadGraphic(magic.mGraphicPath);
-
-		// lvlCounter.text = levelID + "";
 
 		weaponText.text = weapon.type + "";
 		scrollText.text = magic.type + "";

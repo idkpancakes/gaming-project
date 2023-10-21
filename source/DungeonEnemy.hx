@@ -15,7 +15,6 @@ import haxe.Timer;
 
 class DungeonEnemy extends Enemy
 {
-	// var bType:BossType;
 	var thorn:Projectiles;
 	var thornTimer:Timer;
 	var thornMax:Int = 10;
@@ -23,7 +22,6 @@ class DungeonEnemy extends Enemy
 
 	public var thorns:FlxTypedGroup<Projectiles> = new FlxTypedGroup<Projectiles>();
 
-	// var enType:DEnemy;
 	public function new(x:Float = 0, y:Float = 0, type:DEnemy)
 	{
 		super(x, y, type);
@@ -61,7 +59,6 @@ class DungeonEnemy extends Enemy
 				var rand = FlxG.random.int(0, Math.floor(this.height));
 				var thorn = new Projectiles(x, y + rand, ArrowType.STINGER);
 				thorns.add(thorn);
-				// thorn.solid = true;
 
 				var playerPos = player.getMidpoint();
 				var thornPos = thorn.getMidpoint();
