@@ -4,7 +4,7 @@ import Enemy.DEnemy.*;
 import LevelGenerator.LevelGenerator;
 import MagicAttack.MagicType;
 import flixel.FlxCamera;
-import flixel.FlxG;
+import flixel.FlxG;	
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -13,7 +13,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
 import haxe.Log;
-import haxe.ds.BalancedTree;
 
 enum abstract TileType(Int) to Int
 {

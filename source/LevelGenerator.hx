@@ -115,13 +115,11 @@ class LevelGenerator
 		do
 		{
 			var currentRoom:Array<Int> = [];
-
 			// get two random room tiles from the list of tiles
 			var r1Tile = FlxG.random.getObject(roomTiles);
 
 			// attempt at speeding things up, just grab the next roomtile and its LIKELY part of the room. Better chance then a yolo roll hoping we match up.
 			var r2Tile = roomTiles[roomTiles.indexOf(r1Tile) + 1];
-			// var r2Tile = FlxG.random.getObject(roomTiles);
 
 			// compute pathfinding data -- such as distance and reachability between the two tiles, false means we keep computing even if we find a path between them.
 			var pathfindingData = tileMap.computePathData(r1Tile, r2Tile, NONE, false);
@@ -154,19 +152,13 @@ class LevelGenerator
 	static function connectRooms(caveCSV:String)
 	{
 		tileMap.loadMapFromCSV(caveCSV, AssetPaths.black_white_tiles__png);
-
 		// setup collision properties! we really only want room to be impassable for the purposes of
 		tileMap.setTileProperties(TileType.WALL, NONE);
 		tileMap.setTileProperties(TileType.DOOR, NONE);
 		tileMap.setTileProperties(TileType.ROOM, NONE);
-
-		// not allowed ot use existing paths
-		tileMap.setTileProperties(TileType.HALL, ANY);
+		tileMap.setTileProperties(TileType.HALL, ANY); // not allowed ot use existing paths
 
 		var roomListCopy = [].concat(roomList);
-
-		// This will produce less paths but does not promise all rooms will be connected actually if they are all connected its just luck
-
 		while (roomListCopy.length > 1)
 		{
 			var room1 = FlxG.random.getObject(roomListCopy);
@@ -239,7 +231,6 @@ class LevelGenerator
 		}
 
 		data = tileMap.getData();
-
 		// clear all old walls
 		data = data.map(d -> d = d == TileType.WALL ? FinalTiles.VOID : d);
 

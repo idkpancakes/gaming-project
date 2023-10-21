@@ -99,7 +99,7 @@ class MenuState extends FlxState
 
 	public function clickPlay()
 	{
-		FlxG.switchState(new OverworldState());
+		FlxG.switchState(new OverworldState()); 
 	}
 
 	public function clickRules()
